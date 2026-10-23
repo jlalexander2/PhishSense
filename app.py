@@ -103,7 +103,7 @@ def login():
             session["user_id"] = user["user_id"]
             session["username"] = user["username"]
 
-            return redirect(url_for("home"))
+            return redirect(url_for("dashboard"))
 
         return """
         <h1>Login Failed</h1>
@@ -117,6 +117,53 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("home"))
+
+
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "dashboard.html",
+        username=session.get("username", "Learner")
+    )
+
+@app.route("/training")
+def training():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return """
+    <h1>PhishSense Training</h1>
+    <p>Training scenarios are coming in a future milestone.</p>
+    <a href="/dashboard">Back to Dashboard</a>
+    """
+
+
+@app.route("/results")
+def results():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return """
+    <h1>My Results</h1>
+    <p>Your training results will appear here
+    once training functionality is implemented.</p>
+    <a href="/dashboard">Back to Dashboard</a>
+    """
+
+
+@app.route("/history")
+def history():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    return """
+    <h1>Training History</h1>
+    <p>Your completed training sessions will appear here.</p>
+    <a href="/dashboard">Back to Dashboard</a>
+    """
 
 if __name__ == "__main__":
     app.run(debug=True)

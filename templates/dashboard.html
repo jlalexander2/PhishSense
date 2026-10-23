@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learner Dashboard - PhishSense</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .dashboard {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h1 { color: #243b53; }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .option {
+            padding: 20px;
+            background: #eaf2ff;
+            border-radius: 8px;
+        }
+
+        a { color: #174ea6; }
+    </style>
+</head>
+<body>
+    <main class="dashboard">
+        <h1>Welcome, {{ username }}!</h1>
+        <p>Your PhishSense Learner Dashboard</p>
+        <p>Build your phishing awareness skills through
+           personalized training.</p>
+
+        <div class="options">
+            <div class="option">
+                <h2>Start Training</h2>
+                <p>Practice identifying phishing emails.</p>
+                <a href="{{ url_for('training') }}">Start Training</a>
+            </div>
+
+            <div class="option">
+                <h2>My Results</h2>
+                <p>Review your training performance.</p>
+                <a href="{{ url_for('results') }}">View Results</a>
+            </div>
+
+            <div class="option">
+                <h2>Training History</h2>
+                <p>Review your previous sessions.</p>
+                <a href="{{ url_for('history') }}">View History</a>
+            </div>
+        </div>
+
+        <p><a href="{{ url_for('logout') }}">Log Out</a></p>
+    </main>
+</body>
+</html>

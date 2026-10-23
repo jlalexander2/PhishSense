@@ -41,4 +41,26 @@ sqlite3 phishsense.db ".tables"
 - Confirmed temporary test records were rolled back.
 
 # Current Status
-The initial database schema has been implemented and tested. The browser interface, application logic, and adaptive training features are planned for subsequent development.
+
+## Milestone 1: Database Foundation
+- Created and tested the SQLite database schema.
+- Implemented tables for users, training scenarios, sessions, and responses.
+- Verified database integrity and foreign-key relationships.
+
+## Milestone 2: User Authentication and Dashboard
+- Created a Flask-based web application.
+- Implemented user registration with SQLite database integration.
+- Added secure password hashing.
+- Implemented user login and logout functionality.
+- Added session-based authentication.
+- Created a personalized learner dashboard.
+- Added placeholder pages for training, results, and training history.
+- Verified that protected pages redirect unauthenticated users to login.
+- Tested application navigation and authentication functionality.
+
+## Planned Development
+- Implement simulated phishing email scenarios.
+- Add learner responses and immediate feedback.
+- Develop adaptive difficulty adjustments.
+- Track training performance and session history.
+- Implement pre-training and post-training assessments.
