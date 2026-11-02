@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishSense | Email Review</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #14213d;
+            color: white;
+            padding: 22px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px 50px;
+        }
+
+        .company-label {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .page-title {
+            color: #14213d;
+            font-size: 28px;
+            margin: 0 0 12px;
+        }
+
+        .page-description {
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .email-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+            margin-bottom: 25px;
+        }
+
+        .email-header {
+            padding: 28px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .email-subject {
+            color: #14213d;
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 22px;
+            overflow-wrap: anywhere;
+        }
+
+        .email-detail {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .email-detail:last-child {
+            margin-bottom: 0;
+        }
+
+        .email-detail strong {
+            color: #475569;
+            margin-right: 8px;
+        }
+
+        .email-body {
+            padding: 30px;
+            font-size: 15px;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            min-height: 150px;
+        }
+
+        .answer-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .answer-card h3 {
+            color: #14213d;
+            font-size: 19px;
+            margin: 0 0 20px;
+        }
+
+        .answer-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .option:hover {
+            border-color: #93c5fd;
+            background: #eff6ff;
+        }
+
+        .option:has(input:checked) {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .option input {
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+        }
+
+        .field-group {
+            margin-bottom: 28px;
+        }
+
+        .field-label {
+            display: block;
+            color: #14213d;
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .field-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 130px;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        textarea:focus,
+        select:focus {
+            outline: 2px solid #93c5fd;
+            border-color: #2563eb;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            font-family: inherit;
+            font-size: 15px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #1d4ed8;
+        }
+
+        .empty-card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+        }
+
+        .empty-card a {
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 20px;
+            }
+
+            .email-header,
+            .email-body,
+            .answer-card {
+                padding: 22px;
+            }
+
+            .answer-options {
+                flex-direction: column;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>PhishSense</h1>
+        <a href="{{ url_for('inbox') }}">Return to Inbox</a>
+    </header>
+
+    <main>
+
+        <div class="company-label">
+            Evercrest Group | Security Awareness Training
+        </div>
+
+        <h2 class="page-title">
+            Email Review
+        </h2>
+
+        <p class="page-description">
+            Review the email below and determine whether it is phishing
+            or legitimate.
+        </p>
+
+        {% if scenario %}
+
+            <div class="email-card">
+
+                <div class="email-header">
+
+                    <div class="email-subject">
+                        {{ scenario["subject"] }}
+                    </div>
+
+                    <div class="email-detail">
+                        <strong>From:</strong>
+                        {{ scenario["sender_name"] }}
+                        &lt;{{ scenario["sender_email"] }}&gt;
+                    </div>
+
+                    <div class="email-detail">
+                        <strong>To:</strong>
+                        You
+                    </div>
+
+                    <div class="email-detail">
+                        <strong>Subject:</strong>
+                        {{ scenario["subject"] }}
+                    </div>
+
+                </div>
+
+                <div class="email-body">{{ scenario["email_body"] }}</div>
+
+            </div>
+
+            <form
+                class="answer-card"
+                method="POST"
+                action="{{ url_for('training') }}"
+            >
+
+                <input
+                    type="hidden"
+                    name="form_token"
+                    value="{{ form_token }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="scenario_id"
+                    value="{{ scenario['scenario_id'] }}"
+                >
+
+                <h3>How would you classify this email?</h3>
+
+                <div class="answer-options">
+
+                    <label class="option">
+                        <input
+                            type="radio"
+                            name="user_answer"
+                            value="1"
+                            required
+                        >
+                        Phishing
+                    </label>
+
+                    <label class="option">
+                        <input
+                            type="radio"
+                            name="user_answer"
+                            value="0"
+                            required
+                        >
+                        Legitimate
+                    </label>
+
+                </div>
+
+                <div class="field-group">
+
+                    <label
+                        class="field-label"
+                        for="reasoning"
+                    >
+                        Why did you classify this email as phishing
+                        or legitimate?
+                    </label>
+
+                    <p class="field-description">
+                        Explain your reasoning in your own words.
+                    </p>
+
+                    <textarea
+                        id="reasoning"
+                        name="reasoning"
+                        maxlength="5000"
+                        placeholder="Enter your explanation here..."
+                        required
+                    ></textarea>
+
+                </div>
+
+                <div class="field-group">
+
+                    <label
+                        class="field-label"
+                        for="confidence_level"
+                    >
+                        How confident are you in your answer?
+                    </label>
+
+                    <select
+                        id="confidence_level"
+                        name="confidence_level"
+                        required
+                    >
+                        <option value="" disabled selected>
+                            Select your confidence level
+                        </option>
+
+                        <option value="1">
+                            1 - Not confident
+                        </option>
+
+                        <option value="2">
+                            2 - Slightly confident
+                        </option>
+
+                        <option value="3">
+                            3 - Moderately confident
+                        </option>
+
+                        <option value="4">
+                            4 - Very confident
+                        </option>
+
+                        <option value="5">
+                            5 - Extremely confident
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    Submit Answer
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <div class="empty-card">
+
+                <h3>No Email Available</h3>
+
+                <p>
+                    There are no training emails available to review.
+                </p>
+
+                <a href="{{ url_for('inbox') }}">
+                    Return to Inbox
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>
