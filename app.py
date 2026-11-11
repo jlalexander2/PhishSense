@@ -1,29 +1,23 @@
 import os
-import sqlite3
+import psycopg
+from database import get_db_connection
+from mistakes import learner_mistakes
+from adaptive import (VERSION, select_scenarios, evaluate_session, control_scenarios,
+                      ControlScheduleUnavailable, next_scenario, sequence_enforced, pair_safe)
+from psycopg.types.json import Jsonb
+from dotenv import load_dotenv
 import time
 import secrets
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = os.environ.get(
-    "PHISHSENSE_SECRET_KEY",
-    "development-only-change-before-deployment"
-)
-
-DATABASE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "phishsense.db"
-)
+app.secret_key = os.environ.get("PHISHSENSE_SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("Set PHISHSENSE_SECRET_KEY before starting PhishSense.")
 
 SESSION_EMAIL_LIMIT = 10
-
-
-def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
 
 
 def login_required():
@@ -35,7 +29,7 @@ def get_reviewed_ids(conn, training_session_id):
         """
         SELECT DISTINCT scenario_id
         FROM training_responses
-        WHERE session_id = ?
+        WHERE session_id = %s
         """,
         (training_session_id,)
     ).fetchall()
@@ -43,61 +37,63 @@ def get_reviewed_ids(conn, training_session_id):
     return {row["scenario_id"] for row in rows}
 
 
-def get_active_training_session(conn):
+def get_active_training_session(conn, lock=False):
     training_session_id = session.get("training_session_id")
 
     if training_session_id is None:
         return None
 
-    return conn.execute(
+    row = conn.execute(
         """
         SELECT *
         FROM training_sessions
-        WHERE session_id = ?
-          AND user_id = ?
+        WHERE session_id = %s
+          AND user_id = %s
           AND session_type = 'training'
-        """,
+        """ + (" FOR UPDATE" if lock else ""),
         (training_session_id, session["user_id"])
     ).fetchone()
+    if row and row['scenario_ids'] is not None:
+        session['training_scenario_ids'] = row['scenario_ids']
+    return row
 
 
 def create_training_session(conn):
-    scenarios = conn.execute(
-        """
-        SELECT scenario_id
-        FROM training_scenarios
-        ORDER BY RANDOM()
-        LIMIT ?
-        """,
-        (SESSION_EMAIL_LIMIT,)
-    ).fetchall()
-
-    scenario_ids = [row["scenario_id"] for row in scenarios]
+    learner = conn.execute('SELECT study_group FROM users WHERE user_id=%s FOR SHARE',
+                           (session['user_id'],)).fetchone()
+    if learner['study_group'] == 'control':
+        scenario_ids = control_scenarios(conn)
+    else:
+        scenario_ids = select_scenarios(conn, session['user_id'], 'intermediate', SESSION_EMAIL_LIMIT)
 
     if not scenario_ids:
         return None
+    if len(scenario_ids) != SESSION_EMAIL_LIMIT or not pair_safe(conn, scenario_ids):
+        raise ControlScheduleUnavailable()
 
     cursor = conn.execute(
         """
         INSERT INTO training_sessions (
             user_id,
             session_type,
-            current_difficulty
+            current_difficulty, study_group, algorithm_version, scenario_ids
         )
-        VALUES (?, 'training', 'intermediate')
+        SELECT user_id, 'training', 'intermediate', study_group, %s, %s
+        FROM users WHERE user_id=%s RETURNING session_id
         """,
-        (session["user_id"],)
+        (VERSION, Jsonb(scenario_ids), session["user_id"])
     )
 
+    training_session_id = cursor.fetchone()["session_id"]
     conn.commit()
 
-    session["training_session_id"] = cursor.lastrowid
+    session["training_session_id"] = training_session_id
     session["training_scenario_ids"] = scenario_ids
     session.pop("active_scenario_id", None)
     session.pop("scenario_started_at", None)
     session.pop("active_form_token", None)
 
-    return cursor.lastrowid
+    return training_session_id
 
 
 def get_training_scenario_ids():
@@ -114,19 +110,10 @@ def get_training_scenario_ids():
 
 @app.route("/")
 def home():
-    if login_required():
-        return (
-            '<h1>Welcome to PhishSense!</h1>'
-            '<p>You are successfully logged in.</p>'
-            '<p><a href="/dashboard">Go to Dashboard</a></p>'
-            '<p><a href="/logout">Log Out</a></p>'
-        )
-
-    return (
-        '<h1>Welcome to PhishSense!</h1>'
-        '<p>Adaptive Phishing Awareness Training System</p>'
-        '<p><a href="/register">Create an Account</a></p>'
-        '<p><a href="/login">Log In</a></p>'
+    return render_template(
+        "home.html",
+        logged_in=login_required(),
+        username=session.get("username", "Learner")
     )
 
 
@@ -151,13 +138,13 @@ def register():
             conn.execute(
                 """
                 INSERT INTO users (username, email, password_hash)
-                VALUES (?, ?, ?)
+                VALUES (%s, %s, %s)
                 """,
                 (username, email, password_hash)
             )
             conn.commit()
 
-        except sqlite3.IntegrityError:
+        except psycopg.errors.UniqueViolation:
             return (
                 '<h1>Registration Failed</h1>'
                 '<p>That username or email is already registered.</p>'
@@ -187,7 +174,7 @@ def login():
 
         try:
             user = conn.execute(
-                "SELECT * FROM users WHERE email = ?",
+                "SELECT * FROM users WHERE email = %s",
                 (email,)
             ).fetchone()
 
@@ -245,7 +232,15 @@ def inbox():
             training_session is None
             or not scenario_ids
         ):
-            training_session_id = create_training_session(conn)
+            try:
+                training_session_id = create_training_session(conn)
+            except ControlScheduleUnavailable:
+                return render_template(
+                    "inbox.html", username=session.get("username", "Learner"),
+                    emails=[], reviewed_ids=set(), reviewed_count=0, total_count=0,
+                    progress_percent=0,
+                    training_error="Scheduled training is not available yet. Please contact the study coordinator."
+                ), 503
 
             if training_session_id is None:
                 return render_template(
@@ -261,7 +256,7 @@ def inbox():
             training_session = get_active_training_session(conn)
             scenario_ids = get_training_scenario_ids()
 
-        placeholders = ",".join("?" for _ in scenario_ids)
+        placeholders = ",".join("%s" for _ in scenario_ids)
 
         emails = conn.execute(
             f"""
@@ -310,7 +305,7 @@ def inbox():
                 """
                 UPDATE training_sessions
                 SET completed_at = CURRENT_TIMESTAMP
-                WHERE session_id = ?
+                WHERE session_id = %s
                   AND completed_at IS NULL
                 """,
                 (training_session["session_id"],)
@@ -327,7 +322,9 @@ def inbox():
         reviewed_ids=reviewed_ids,
         reviewed_count=reviewed_count,
         total_count=total_count,
-        progress_percent=progress_percent
+        progress_percent=progress_percent,
+        sequence_locked=sequence_enforced(training_session),
+        next_scenario_id=next_scenario(training_session, reviewed_ids)
     )
 
 
@@ -361,10 +358,16 @@ def training():
             ):
                 return redirect(url_for("inbox"))
 
+            if scenario_id not in get_training_scenario_ids():
+                return redirect(url_for("inbox"))
+
             reviewed_ids = get_reviewed_ids(
                 conn,
                 training_session["session_id"]
             )
+
+            if sequence_enforced(training_session) and scenario_id != next_scenario(training_session, reviewed_ids):
+                return redirect(url_for("inbox"))
 
             if scenario_id in reviewed_ids:
                 return redirect(url_for("inbox"))
@@ -373,7 +376,7 @@ def training():
                 """
                 SELECT *
                 FROM training_scenarios
-                WHERE scenario_id = ?
+                WHERE scenario_id = %s
                 """,
                 (scenario_id,)
             ).fetchone()
@@ -452,7 +455,7 @@ def training():
     conn = get_db_connection()
 
     try:
-        training_session = get_active_training_session(conn)
+        training_session = get_active_training_session(conn, lock=True)
 
         if (
             training_session is None
@@ -460,10 +463,19 @@ def training():
         ):
             return "This training session is no longer active.", 400
 
+        if scenario_id not in get_training_scenario_ids():
+            return "This email is no longer part of your training session.", 400
+
+        if training_session['algorithm_version'] == VERSION and not pair_safe(conn, training_session['scenario_ids']):
+            return "Training selection is unavailable. Please contact the study coordinator.", 409
+
         reviewed_ids = get_reviewed_ids(
             conn,
             training_session["session_id"]
         )
+
+        if sequence_enforced(training_session) and scenario_id != next_scenario(training_session, reviewed_ids):
+            return "Please complete the next available email first.", 400
 
         if scenario_id in reviewed_ids:
             return redirect(url_for("inbox"))
@@ -472,7 +484,7 @@ def training():
             """
             SELECT *
             FROM training_scenarios
-            WHERE scenario_id = ?
+            WHERE scenario_id = %s
             """,
             (scenario_id,)
         ).fetchone()
@@ -496,7 +508,7 @@ def training():
                 response_time,
                 difficulty_at_response
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 training_session["session_id"],
@@ -510,7 +522,10 @@ def training():
             )
         )
 
+        updated_ids = evaluate_session(conn, training_session)
         conn.commit()
+        if updated_ids is not None:
+            session['training_scenario_ids'] = updated_ids
 
     finally:
         conn.close()
@@ -527,6 +542,23 @@ def training():
         confidence_level=confidence_level,
         reasoning=reasoning
     )
+
+
+@app.route("/mistakes", methods=["GET"])
+def mistakes():
+    if not login_required():
+        return redirect(url_for("login"))
+    conn = get_db_connection()
+    try:
+        conn.execute("SET TRANSACTION READ ONLY")
+        summary = learner_mistakes(conn, session["user_id"])
+    finally:
+        conn.close()
+    response = app.make_response(render_template(
+        "mistakes.html", summary=summary,
+        username=session.get("username", "Learner")))
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @app.route("/results")
@@ -555,4 +587,4 @@ def history():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

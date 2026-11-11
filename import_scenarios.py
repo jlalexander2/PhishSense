@@ -1,10 +1,10 @@
 import json
-import sqlite3
+from database import get_db_connection
+from psycopg.types.json import Jsonb
 import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE_PATH = BASE_DIR / "phishsense.db"
 DATASET_PATH = BASE_DIR / "data" / "scenarios_approved_for_prototype.jsonl"
 
 REQUIRED_FIELDS = [
@@ -98,6 +98,17 @@ def validate_scenarios(scenarios):
                 f"Scenario {index}: Not approved for prototype"
             )
 
+        objectives = scenario.get("learning_objectives")
+        if objectives is not None and (not isinstance(objectives, list) or
+                not all(isinstance(v, str) and v.strip() for v in objectives)):
+            errors.append(f"Scenario {index}: Invalid learning objectives")
+        pair = scenario.get("matched_pair_id")
+        if pair is not None and (not isinstance(pair, str) or not pair.strip()):
+            errors.append(f"Scenario {index}: Invalid matched pair")
+        context = scenario.get("training_context")
+        if context is not None and not isinstance(context, str):
+            errors.append(f"Scenario {index}: Invalid training context")
+
     return errors
 
 
@@ -137,17 +148,21 @@ def preview_scenarios(scenarios):
         print(status)
 
 
-def import_scenarios(scenarios):
-    connection = sqlite3.connect(DATABASE_PATH)
+def import_scenarios(scenarios, connection=None):
+    errors = validate_scenarios(scenarios)
+    if errors:
+        raise ValueError("Scenario validation failed; import canceled.")
+    owns_connection = connection is None
+    connection = connection or get_db_connection()
 
     inserted = 0
     skipped = 0
 
     try:
-        connection.execute("BEGIN")
+        connection.execute("LOCK TABLE training_scenarios IN SHARE ROW EXCLUSIVE MODE")
 
         existing_ids = {
-            row[0]
+            row["source_id"]
             for row in connection.execute(
                 """
                 SELECT source_id
@@ -177,9 +192,9 @@ def import_scenarios(scenarios):
                     phishing_intent,
                     phishing_technique,
                     target_category,
-                    source_id
+                    source_id, training_context, learning_objectives, matched_pair_id, introduced_in_version
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     scenario["sender_name"],
@@ -193,24 +208,32 @@ def import_scenarios(scenarios):
                     scenario.get("phishing_technique"),
                     scenario.get("target_category"),
                     source_id,
+                    scenario.get("training_context"),
+                    Jsonb(scenario["learning_objectives"]) if scenario.get("learning_objectives") is not None else None,
+                    scenario.get("matched_pair_id"),
+                    scenario.get("introduced_in_version"),
                 )
             )
 
             existing_ids.add(source_id)
             inserted += 1
 
-        connection.commit()
+        if owns_connection:
+            connection.commit()
 
     except Exception:
-        connection.rollback()
+        if owns_connection:
+            connection.rollback()
         raise
 
     finally:
-        connection.close()
+        if owns_connection:
+            connection.close()
 
-    print("\nDatabase Import Complete")
+    print("\nDatabase Import Complete" if owns_connection else "\nScenario inserts staged in caller transaction")
     print(f"New scenarios inserted: {inserted}")
     print(f"Existing scenarios skipped: {skipped}")
+    return {"inserted": inserted, "skipped": skipped}
 
 
 def main():
@@ -241,7 +264,7 @@ def main():
         return
 
     confirmation = input(
-        "\nType IMPORT to add these scenarios to SQLite: "
+        "\nType IMPORT to add these scenarios to PostgreSQL: "
     )
 
     if confirmation != "IMPORT":

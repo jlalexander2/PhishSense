@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Mistake Patterns | PhishSense</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f4f7fb; color: #14213d; }
+        header { background: #14213d; color: white; padding: 24px max(24px, calc((100vw - 1000px) / 2)); }
+        header a { color: white; }
+        main { max-width: 1000px; margin: 36px auto; padding: 0 24px 40px; }
+        h1 { font-size: 30px; }
+        p { line-height: 1.7; }
+        .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        article, .metadata { padding: 24px; border: 1px solid #dce3ed; border-radius: 12px; background: white; }
+        article h2 { margin-top: 0; font-size: 21px; }
+        .count { font-size: 36px; font-weight: bold; margin: 16px 0; }
+        .status { display: inline-block; padding: 8px 12px; border-radius: 20px; background: #edf2f7; color: #425774; }
+        .recurring { background: #fff0d7; color: #774700; }
+        .metadata { margin-top: 28px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        caption { text-align: left; padding: 0 0 16px; font-weight: bold; }
+        th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid #dce3ed; line-height: 1.6; overflow-wrap: anywhere; }
+        a:focus-visible { outline: 3px solid #2563eb; outline-offset: 5px; }
+        @media (max-width: 650px) { .cards { grid-template-columns: 1fr; } article, .metadata { padding: 18px; } }
+    </style>
+</head>
+<body>
+<header><strong>PhishSense</strong> &middot; <a href="{{ url_for('dashboard') }}">Back to Dashboard</a></header>
+<main>
+    <h1>My Mistake Patterns</h1>
+    <p>{{ username }}, this read-only summary covers your recorded training responses across sessions.
+       An error type becomes recurring at <strong>{{ summary.threshold }} occurrences</strong>.
+       Correct answers do not add to or reset these cumulative counts.</p>
+    <div class="cards">
+        {% for error in summary.errors %}
+        <article data-error-type="{{ error.error_type }}">
+            <h2>{{ error.label }}</h2>
+            <p>{% if error.error_type == 'missed_phishing' %}Phishing emails classified as legitimate.{% else %}Legitimate emails classified as phishing.{% endif %}</p>
+            <p class="count">{{ error.count }} <span style="font-size: 16px; font-weight: normal;">occurrences</span></p>
+            <span class="status {{ 'recurring' if error.recurring else '' }}">{{ 'Recurring' if error.recurring else 'Not recurring' }}</span>
+        </article>
+        {% endfor %}
+    </div>
+    <section class="metadata" aria-labelledby="metadata-heading">
+        <h2 id="metadata-heading">Associated scenario metadata</h2>
+        <p>Labels below come directly from scenarios answered incorrectly. They show associations,
+           not a diagnosis of why you answered incorrectly. One response may be associated with several objectives;
+           these counts should not be added together as separate mistakes.</p>
+        {% if summary.associations %}
+        <div class="table-wrap"><table>
+            <caption>Exact stored techniques and learning objectives</caption>
+            <thead><tr><th scope="col">Error type</th><th scope="col">Metadata</th><th scope="col">Stored label</th><th scope="col">Count</th><th scope="col">Recurring</th></tr></thead>
+            <tbody>{% for item in summary.associations %}
+            <tr><td>{{ item.label }}</td><td>{{ item.metadata_type }}</td><td>{{ item.concept }}</td><td>{{ item.count }}</td><td>{{ 'Yes' if item.recurring else 'No' }}</td></tr>
+            {% endfor %}</tbody>
+        </table></div>
+        {% else %}
+        <p>No technique or learning-objective associations are available from your incorrect training responses yet.</p>
+        {% endif %}
+    </section>
+    <p>Only your own training records are shown. Assessment sessions are excluded.
+       This summary does not change your training difficulty, schedule, or recorded answers.</p>
+</main>
+</body>
+</html>

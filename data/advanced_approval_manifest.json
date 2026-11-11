@@ -1,0 +1,17 @@
+{
+  "source_sha256": {
+    "evercrest_advanced_scenarios_draft_v2.json": "2424c7dbad79f0c35a1aeb7e84a1584e013f73005e76cbc28c72687aafb9254d",
+    "evercrest_advanced_independent_drafts.json": "028454832bca7c86b049bcb3ad246642472ecc958316bfa39093f9450f2cde43"
+  },
+  "original_approved_jsonl_sha256": "dc78ac1b9cf32eb6ddb84dd203153a1732e2e274713e5d6db88aae3e7a1cf836",
+  "approved_source_ids": [
+    "evercrest-adv-draft-phish-001",
+    "evercrest-adv-draft-phish-002",
+    "evercrest-adv-draft-phish-003",
+    "evercrest-adv-draft-legit-001",
+    "evercrest-adv-draft-legit-002",
+    "evercrest-adv-draft-legit-003",
+    "evercrest-adv-draft-independent-phish-001",
+    "evercrest-adv-draft-independent-legit-001"
+  ]
+}

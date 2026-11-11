@@ -1,29 +1,107 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PhishSense</title>
+    <meta name="theme-color" content="#14213d">
+    <title>Log In | PhishSense</title>
+    <style>
+        :root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; color: #14213d; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; background: #f4f7fb; }
+        a { color: #174ea6; text-underline-offset: 4px; }
+        .layout { min-height: 100vh; display: grid; grid-template-columns: 1.05fr 1fr; }
+        .intro { padding: 56px clamp(32px, 6vw, 96px); background: radial-gradient(ellipse at bottom left, #254e76, transparent 75%), #14213d; color: white; display: flex; flex-direction: column; justify-content: space-between; gap: 56px; }
+        .brand { display: inline-flex; align-items: center; gap: 12px; font-size: 24px; font-weight: bold; letter-spacing: -.6px; text-decoration: none; color: white; align-self: flex-start; }
+        .brand-icon { width: 42px; height: 46px; color: #93d9dc; }
+        .eyebrow { color: #a5e1e2; font-size: 12px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+        .intro h1 { font-size: clamp(36px, 4vw, 56px); line-height: 1.12; letter-spacing: -1.8px; max-width: 480px; margin: 20px 0; }
+        .intro-copy { color: #d0ddec; line-height: 1.8; max-width: 410px; font-size: 16px; }
+        .preview { margin-top: 36px; max-width: 400px; padding: 22px; border: 1px solid #ffffff30; border-radius: 16px; background: #ffffff09; }
+        .preview-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; }
+        .preview-label { border-radius: 20px; padding: 6px 10px; color: #b9f0e5; background: #b9f0e512; font-size: 11px; }
+        .preview-message { display: flex; gap: 14px; align-items: center; margin-top: 22px; }
+        .mail-icon { flex-shrink: 0; width: 42px; height: 42px; padding: 10px; color: #a5e1e2; background: #a5e1e214; border-radius: 12px; }
+        .preview-message p { margin: 0; font-size: 14px; line-height: 1.6; }
+        .preview-message span { color: #b9cce0; font-size: 12px; }
+        .intro-footer { color: #b9cce0; font-size: 12px; line-height: 1.6; margin: 0; }
+        .login-panel { display: flex; align-items: center; justify-content: center; padding: 64px 32px; }
+        .login-card { width: 100%; max-width: 420px; }
+        .step-label { margin: 0 0 16px; color: #526783; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.8px; }
+        h2 { margin: 0 0 12px; font-size: 36px; letter-spacing: -1px; }
+        .subtitle { margin: 0 0 36px; color: #52637b; line-height: 1.7; }
+        label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 10px; }
+        .field { margin-bottom: 24px; }
+        input { width: 100%; min-height: 52px; border: 1px solid #b8c5d6; border-radius: 9px; padding: 14px 16px; color: #14213d; background: white; font: inherit; }
+        input::placeholder { color: #68798e; }
+        input:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+        a:focus-visible, button:focus-visible { outline: 3px solid #2563eb; outline-offset: 5px; }
+        .submit { width: 100%; min-height: 52px; padding: 14px 20px; border: 0; border-radius: 9px; background: #174ea6; color: white; font: inherit; font-weight: bold; cursor: pointer; box-shadow: 0 5px 12px #174ea61a; }
+        .submit:hover { background: #123d83; }
+        .signup { text-align: center; color: #52637b; font-size: 14px; line-height: 1.8; margin: 26px 0 0; }
+        .signup a { font-weight: bold; }
+        .note { margin-top: 40px; padding-top: 24px; border-top: 1px solid #dce3ed; color: #52637b; font-size: 12px; line-height: 1.7; text-align: center; }
+        @media (max-width: 800px) {
+            .layout { grid-template-columns: 1fr; }
+            .intro { padding: 28px 24px 36px; gap: 32px; }
+            .intro h1 { font-size: 36px; max-width: 540px; }
+            .intro-copy { max-width: 540px; margin-bottom: 0; }
+            .preview, .intro-footer { display: none; }
+            .login-panel { padding: 40px 24px 48px; }
+            h2 { font-size: 30px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome Back to PhishSense!</h1>
-    <p>Log in to continue your phishing awareness training.</p>
-
-    <form method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <br><br>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br><br>
-
-        <button type="submit">Log In</button>
-    </form>
-
-    <p>Don't have an account?
-        <a href="/register">Create an Account</a>
-    </p>
+    <main class="layout">
+        <section class="intro" aria-labelledby="intro-heading">
+            <a class="brand" href="{{ url_for('home') }}" aria-label="PhishSense home">
+                <svg class="brand-icon" viewBox="0 0 40 44" fill="none" aria-hidden="true">
+                    <path d="M20 3 36 9v12c0 10-9 17-16 20C13 38 4 31 4 21V9L20 3Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="m12 22 5 5 11-12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                PhishSense
+            </a>
+            <div>
+                <div class="eyebrow">Pause. Inspect. Decide.</div>
+                <h1 id="intro-heading">A sharper eye.<br>A safer inbox.</h1>
+                <p class="intro-copy">Build your phishing awareness one email at a time. Practice spotting warning signs in a simulated workplace inbox, and learn from every decision.</p>
+                <div class="preview" aria-label="Training preview">
+                    <div class="preview-header">
+                        <strong>Evercrest Group</strong>
+                        <span class="preview-label">Training preview</span>
+                    </div>
+                    <div class="preview-message">
+                        <svg class="mail-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="m3 6 9 7 9-7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        </svg>
+                        <p>Does this email add up?<br><span>Inspect the sender. Look for the clues.</span></p>
+                    </div>
+                </div>
+            </div>
+            <p class="intro-footer">Phishing awareness through practice.<br>A Computer Science capstone project.</p>
+        </section>
+        <section class="login-panel" aria-labelledby="login-heading">
+            <div class="login-card">
+                <p class="step-label">Your learning space</p>
+                <h2 id="login-heading">Welcome back.</h2>
+                <p class="subtitle">Log in to continue your PhishSense training.</p>
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="field">
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email" autocomplete="username" placeholder="you@example.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" autocomplete="current-password" required>
+                    </div>
+                    <button class="submit" type="submit">Log In <span aria-hidden="true">&rarr;</span></button>
+                </form>
+                <p class="signup">New to PhishSense? <a href="{{ url_for('register') }}">Create an account</a></p>
+                <p class="note">Practice with simulated emails.<br>Learn the clues you can use beyond the inbox.</p>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

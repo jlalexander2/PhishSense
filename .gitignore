@@ -10,3 +10,21 @@ __pycache__/
 
 .env
 .venv/
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.pem
+*.crt
+.pytest_cache/
+
+# Local-only recording assets contain synthetic demo login details.
+/BROWSER_TESTING.md
+/DEMO_WALKTHROUGH.md
+/scripts/browser_e2e.py
+/scripts/recording_demo.py
+# Unreviewed source material and superseded drafts stay local.
+/data/phishing_email_dataset.jsonl
+/data/scenarios_for_review.jsonl
+/data/scenarios_reviewed_draft.jsonl
+/data/evercrest_advanced_scenarios_draft.json

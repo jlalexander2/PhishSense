@@ -1,0 +1,52 @@
+[
+  {
+    "source_id": "evercrest-adv-draft-independent-phish-001",
+    "sender_name": "Rowan Blake | Meridian Document Support",
+    "sender_email": "rowan.blake@meridian-docs.example",
+    "subject": "CR-306: preview diagnostics for the board-paper renderer",
+    "training_context": "Your team reported a PDF preview problem in the board-paper application. The saved CR-306 record names Meridian as the software supplier and lists diagnostic collection as the current step. Evercrest software changes are distributed through Software Center. You have not received a Software Center deployment for this incident.",
+    "is_phishing": 1,
+    "phishing_intent": "Obtain user-assisted execution of untrusted remote code",
+    "phishing_technique": "ClickFix-style diagnostic pretext",
+    "target_category": "Evercrest Group / Document application support",
+    "explanation": "The real-looking incident and relevant symptom make this plausible, but the requested action executes externally supplied code rather than merely reporting diagnostic information. The message redirects the employee away from the stated Software Center process and presents lack of administrator access as reassurance; running code as the current user can still expose that user's files and session. Treat this authored scenario as suspected phishing, do not run the helper, and verify with the internal incident owner through the existing record. The available evidence supports withholding an unverified execution request, not a claim that the visible sender address proves compromise. No executable command or script is supplied in this simulation.",
+    "learning_objectives": [
+      "Distinguish diagnostic collection from retrieval and execution of remote code.",
+      "Recognize a troubleshooting pretext that bypasses an established software-delivery process.",
+      "Understand that non-administrator execution is not proof of safety."
+    ],
+    "email_body": "TRAINING CONTEXT (not part of the email):\nYour team reported a PDF preview problem in the board-paper application. The saved CR-306 record names Meridian as the software supplier and lists diagnostic collection as the current step. Evercrest software changes are distributed through Software Center. You have not received a Software Center deployment for this incident.\n\nEMAIL MESSAGE:\nHello,\n\nWe have isolated the preview issue reported under CR-306 to the local rendering component. Before the next board-paper upload, please run the compatibility check from the support page below and add its reference to the existing incident.\n\n[Simulated support page: support.meridian-docs.example / CR-306 — inactive]\n\nThe check provides a diagnostic line to copy into your terminal. Its action preview says it retrieves a helper script from the support site and runs it in your current user session. This captures the renderer state without requiring administrator access or a separate installation package.\n\nPlease use that method for this collection rather than waiting for Software Center; the deployment package will follow once the diagnostic results are reviewed.\n\nRegards,\nRowan Blake\nMeridian Document Support",
+    "difficulty_level": "advanced",
+    "review_status": "draft",
+    "matched_pair_id": null,
+    "original_label": "phishing",
+    "source_dataset": null,
+    "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+    "review_notes": "Unapproved independent draft. No counterpart in the existing matched pairs. Context is embedded in email_body for the current template. Advanced difficulty is provisional. No active links, executable commands or actual attachments. Objectives and pairing metadata require persistence support before a future import."
+  },
+  {
+    "source_id": "evercrest-adv-draft-independent-legit-001",
+    "sender_name": "Mara Chen | Wrenfield Search",
+    "sender_email": "mara.chen@wrenfield-search.example",
+    "subject": "REC-118: interview pack for the operations shortlist",
+    "training_context": "Your saved REC-118 recruitment brief identifies Mara Chen at wrenfield-search.example as the external search contact. It records delivery of an encrypted ZIP containing three PDF interview packs, with the archive password supplied through the previously arranged phone call. The call has taken place. A separate note in the same brief assigns panel members to return scores through Evercrest's internal recruitment record.",
+    "is_phishing": 0,
+    "phishing_intent": null,
+    "phishing_technique": null,
+    "target_category": "Evercrest Group / Recruitment document handling",
+    "explanation": "The independent recruitment brief establishes the sender, delivery format, expected PDF contents, password channel and response workflow before this message arrives. The email and visible attachment preview match those details and request no additional viewer, account authorization or change of destination. This is legitimate within the supplied evidence, despite the encrypted external attachment. Encryption, a ZIP extension, a matching sender or the absence of an install request would not alone establish safety. Use the organization's normal file-handling controls and stop if the actual contents or opening behavior differ; a preview cannot guarantee that real files are harmless. The simulated archive contains no downloadable files.",
+    "learning_objectives": [
+      "Evaluate an external archive against independently established delivery expectations.",
+      "Distinguish confidentiality measures from evidence of authenticity or file safety.",
+      "Check expected contents and preserve the existing response workflow without treating every encrypted attachment as phishing."
+    ],
+    "email_body": "TRAINING CONTEXT (not part of the email):\nYour saved REC-118 recruitment brief identifies Mara Chen at wrenfield-search.example as the external search contact. It records delivery of an encrypted ZIP containing three PDF interview packs, with the archive password supplied through the previously arranged phone call. The call has taken place. A separate note in the same brief assigns panel members to return scores through Evercrest's internal recruitment record.\n\nEMAIL MESSAGE:\nHello,\n\nThe operations shortlist is ready for the panel review under REC-118. I have included the three interview packs in the encrypted archive, using the password from our scheduled call.\n\n[Simulated attachment: REC-118_interview_packs.zip; contents preview: Candidate-A.pdf, Candidate-B.pdf, Candidate-C.pdf — not downloadable]\n\nPlease extract the PDFs and review them before the panel discussion. The archive contains the candidate packs only; scoring remains in the internal recruitment record so that each interviewer can complete an independent assessment.\n\nIf the password does not open the archive, contact me using the details already recorded in the recruitment brief and I will arrange another delivery. There is no separate viewer to install.\n\nKind regards,\nMara Chen\nWrenfield Search",
+    "difficulty_level": "advanced",
+    "review_status": "draft",
+    "matched_pair_id": null,
+    "original_label": "benign",
+    "source_dataset": null,
+    "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+    "review_notes": "Unapproved independent draft. No counterpart in the existing matched pairs. Context is embedded in email_body for the current template. Advanced difficulty is provisional. No active links, executable commands or actual attachments. Objectives and pairing metadata require persistence support before a future import."
+  }
+]

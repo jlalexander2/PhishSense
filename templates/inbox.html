@@ -214,6 +214,10 @@
             color: #166534;
         }
 
+        .email-row.locked { background: #f8fafc; color: #64748b; }
+        .locked-status { background: #e2e8f0; color: #475569; }
+        .sequence-note { color: #475569; font-size: 14px; line-height: 1.6; }
+
         .email-row.completed {
             background: #f8fafc;
             opacity: 0.75;
@@ -302,6 +306,10 @@
             </p>
         </section>
 
+        {% if sequence_locked %}
+            <p class="sequence-note">Review your emails in order. The next available email is ready to open; later emails unlock as you progress.</p>
+        {% endif %}
+
         <section class="progress-card">
 
             <div class="progress-header">
@@ -360,6 +368,17 @@
 
                         </div>
 
+                    {% elif sequence_locked and email["scenario_id"] != next_scenario_id %}
+
+                        <div class="email-row locked" aria-disabled="true">
+                            <div class="email-icon" aria-hidden="true">&#128274;</div>
+                            <div class="email-info">
+                                <div class="email-sender">{{ email["sender_name"] }}</div>
+                                <div class="email-subject">{{ email["subject"] }}</div>
+                            </div>
+                            <span class="email-status locked-status">Locked &middot; Email {{ loop.index }}</span>
+                        </div>
+
                     {% else %}
 
                         <a
@@ -396,7 +415,7 @@
             {% else %}
 
                 <div class="empty-message">
-                    No training emails are currently available.
+                    {{ training_error if training_error else "No training emails are currently available." }}
                 </div>
 
             {% endif %}

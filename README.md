@@ -1,14 +1,15 @@
 # PhishSense
 
-**Version:** 0.3.0 — Milestone 3 Prototype  
+**Version:** 0.4.0 — Milestone 4 Adaptive Training
+
 **Status:** Active Development  
 **Project Type:** Master's Capstone — Cybersecurity Awareness Training
 
 ## Project Overview
 
-PhishSense is a browser-based phishing-awareness training application designed to help users recognize phishing emails through simulated workplace scenarios, interactive email classification, immediate educational feedback, and eventually adaptive learning.
+PhishSense is a browser-based phishing-awareness training application designed to help users recognize phishing emails through simulated workplace scenarios, interactive email classification, immediate educational feedback, and rule-based adaptive learning.
 
-The application is being developed using Python, Flask, SQLite, HTML, and CSS.
+The application uses Python, Flask, PostgreSQL (Supabase), HTML, and CSS. Milestones 1–3 used SQLite.
 
 PhishSense aims to provide a more engaging alternative to traditional phishing-awareness quizzes by allowing learners to review simulated emails in a realistic corporate inbox.
 
@@ -16,9 +17,9 @@ The long-term objective is to evaluate whether adaptive phishing-awareness train
 
 ## Current Development Version
 
-**PhishSense v0.3.0 — Milestone 3 Prototype**
+**PhishSense v0.4.0 — Milestone 4 Adaptive Training**
 
-This version introduces a functional phishing-awareness training workflow.
+This version adds approved rule-based adaptation, fixed control scheduling, recurring-mistake summaries, and Supabase PostgreSQL storage.
 
 Implemented features include:
 
@@ -34,9 +35,13 @@ Implemented features include:
 - Immediate educational feedback
 - Training progress tracking
 - Prevention of duplicate responses within a training session
-- SQLite storage of training scenarios, sessions, and learner responses
+- Supabase PostgreSQL storage of scenarios, sessions, and responses
+- Five-response adaptive evaluations using accuracy, response time, and confidence
+- Performance-independent control schedule and sequential completion
+- Matched-pair exclusion for advanced scenarios
+- Learner-specific recurring-mistake tracking and read-only summary
 
-The adaptive learning algorithm, gamification features, and full results dashboard are planned for future development.
+Researcher dashboards, exports, and additional research administration are deferred to Milestone 5. Gamification and formal assessments remain future work.
 
 ## Evercrest Group: Simulated Training Environment
 
@@ -44,7 +49,7 @@ PhishSense uses a fictional organization named **Evercrest Group** to provide a 
 
 Instead of answering isolated quiz questions, learners interact with a simulated employee inbox containing phishing and legitimate messages.
 
-The inbox displays email senders, subject lines, and review statuses. Learners can select messages in their preferred order, classify each email, and receive immediate feedback.
+The inbox displays email senders, subject lines, and review statuses. Learners complete messages in the required order, classify each email, and receive immediate feedback.
 
 The interface also displays a progress bar showing how many emails have been reviewed during the current training session.
 
@@ -64,7 +69,7 @@ These features are not yet implemented.
 
 - **Python:** Application logic and database operations
 - **Flask:** Web application framework
-- **SQLite:** Local relational database
+- **PostgreSQL / Supabase:** Relational database (Milestone 4 migration)
 - **SQL:** Database schema and queries
 - **HTML:** Application interfaces
 - **CSS:** Interface styling
@@ -74,7 +79,7 @@ These features are not yet implemented.
 
 ## Database Architecture
 
-PhishSense uses four primary SQLite tables.
+PhishSense uses four primary relational tables.
 
 ### Users
 
@@ -121,6 +126,29 @@ Records individual learner responses, including:
 
 Foreign-key relationships are used to maintain referential integrity.
 
+## Milestone 4: baseline and adaptive training
+
+T14/T15 now use the approved five-response rules and intermediate baseline.
+See [ADAPTIVE_TRAINING.md](ADAPTIVE_TRAINING.md) for thresholds, selection,
+group handling, research audit records, availability limits, and schema setup.
+New sessions enforce response order for both groups. Controls use the approved
+fixed mixed schedule, gated on six intermediate, two easy and two pair-compatible
+hard scenarios. The approved pool now contains 7 easy, 12 intermediate and
+8 advanced scenarios. Pair exclusion applies to both research groups.
+Existing session versions and historical results are preserved.
+Existing and newly registered accounts remain **unassigned and non-adaptive**
+until explicitly assigned under the study protocol. Experimental learners can
+receive five pair-compatible hard scenarios after qualifying baseline performance.
+The hard pool has no spare independent capacity; expand and pilot it before
+participant research. See [SCENARIO_INTEGRATION.md](SCENARIO_INTEGRATION.md).
+
+Milestone 4 also includes a read-only learner mistake summary at `/mistakes`.
+Two incorrect responses of the same type are recurring; missed phishing and
+false alarms are tracked separately across training sessions. Exact existing
+technique/objective associations are shown where available. See
+[MISTAKE_TRACKING.md](MISTAKE_TRACKING.md). No migration or adaptive-rule change
+is required. Researcher administration and exports remain deferred to Milestone 5.
+
 ## Application Workflow
 
 The current training workflow follows these steps:
@@ -134,7 +162,7 @@ The current training workflow follows these steps:
 7. The learner classifies the message as phishing or legitimate.
 8. The learner provides a written explanation.
 9. The learner selects a confidence rating.
-10. The application records the response in SQLite.
+10. The application records the response in PostgreSQL.
 11. The learner receives immediate educational feedback.
 12. The learner returns to the inbox, where progress and review status are updated.
 
@@ -223,7 +251,7 @@ These measures may support comparisons between the control and experimental grou
 
 The proposed study design has been outlined, and the application now includes initial mechanisms for collecting training responses.
 
-The adaptive learning algorithm, control-group workflow, and full research evaluation process have not yet been implemented.
+The adaptive and fixed control workflows are implemented and validated. Formal participant evaluation and research administration remain future work.
 
 No formal participant-study findings are reported at this stage.
 
@@ -261,7 +289,7 @@ The repository includes the following components:
 | File or Directory | Purpose |
 |---|---|
 | `app.py` | Main Flask application |
-| `schema.sql` | SQLite database schema |
+| `schema.sql` | PostgreSQL database schema |
 | `import_scenarios.py` | Imports approved training scenarios |
 | `templates/` | HTML application templates |
 | `templates/dashboard.html` | Learner dashboard |
@@ -275,65 +303,118 @@ The repository includes the following components:
 
 SQLite database files, local database backups, and the Python virtual environment are excluded from version control.
 
-## Local Setup
+## Supabase PostgreSQL setup
 
-PhishSense is currently intended to run locally for development and testing.
+The runtime now uses PostgreSQL through psycopg. Supabase authentication is not
+used: Flask sessions and existing Werkzeug password hashes are retained. HTML
+and the Evercrest training interface is preserved. The existing SQLite data has been migrated and the adaptive/control workflows tested
+against Supabase. See `MIGRATION_REPORT.md` for validation details.
 
-### 1. Open the Project Directory
+1. Create a separate Supabase development project. Obtain the direct or **session
+   pooler** PostgreSQL URI from Connect (session mode supports IPv4). Download the
+   project CA certificate if needed (see TLS trust below). See [Supabase connections](https://supabase.com/docs/guides/database/connecting-to-postgres).
+2. Create/activate a virtual environment, then install dependencies:
 
-Open the PhishSense project in Visual Studio Code or a terminal.
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python -m pip install -r requirements.txt
+   cp .env.example .env
+   python -c 'import secrets; print(secrets.token_hex(32))'
+   ```
 
-### 2. Create a Python Virtual Environment
+3. Edit ignored `.env` locally: set `DATABASE_URL`, `PGSSLROOTCERT` (absolute CA
+   certificate path), and `PHISHSENSE_SECRET_KEY` (generated value). URL-encode
+   special characters in the database password. Never paste credentials into
+   issues/chat or commit them. `.env` loads automatically; exported variables
+   take precedence. TLS always uses `verify-full`, even if the URI requests less.
+   Use a database role that can access the tables; the schema owner works for
+   initial development. RLS is enabled with no Data API policies, so browser
+   anonymous/authenticated roles cannot read learner data. A restricted backend
+   role needs explicit grants and an appropriate RLS policy before use.
+4. Review `schema.sql` and confirm the target has none of the four application
+   tables. After approving that target, initialize it once:
+
+   ```bash
+   python -c 'from database import get_db_connection; from pathlib import Path; c=get_db_connection(); c.execute(Path("schema.sql").read_text()); c.commit(); c.close()'
+   ```
+
+   This is transactional and intentionally fails on existing tables rather than
+   silently treating an incompatible schema as current. Do not drop existing
+   tables. No schema initialization occurs automatically at application startup.
+5. Preview the existing SQLite database (read-only, counts only):
+
+   ```bash
+   python migrate_sqlite.py phishsense.db
+   ```
+
+   Review counts and approve uploading these accounts/responses to your chosen
+   Supabase project before running:
+
+   ```bash
+   python migrate_sqlite.py phishsense.db --apply
+   ```
+
+   Type `MIGRATE` when prompted. All four target tables must be empty. Copying is
+   atomic, retains IDs, hashes, scenario fields and responses, verifies field
+   values, and resets identity counters transactionally. SQLite timestamps without
+   a timezone are interpreted as UTC (SQLite CURRENT_TIMESTAMP convention).
+   The source and backups are never written. The tool locks target tables during
+   copying; run it before starting the app. A failure rolls back the copy. Do not
+   import scenarios first if you intend to migrate existing records.
+6. For a fresh installation without legacy records, preview approved scenarios
+   with `python import_scenarios.py`, then run `python import_scenarios.py --import`
+   and type `IMPORT`. Importing skips existing source IDs, validates approval,
+   and commits atomically. Review the dataset before uploading it.
+7. Start with `python app.py`. Visit http://127.0.0.1:5000. Keep the Flask secret
+   stable to preserve signed sessions; a changed secret requires logging in again.
+   Debug mode is off by default. This remains a development application.
+
+### TLS trust and read-only connection check
+
+`database.py` always enforces `sslmode=verify-full`, checking the certificate
+chain and hostname. `PGSSLROOTCERT=system` (or unset/blank) uses libpq's
+OpenSSL trust store on libpq 16+. This is not necessarily the macOS Keychain.
+An absolute path to a trusted PEM CA bundle is also supported. Missing explicit
+CA files fail with a configuration error; verification is never weakened.
+
+The configured session pooler failed verification with both the driver's system
+store and `/etc/ssl/cert.pem` during development. Supabase's public CA was fetched
+with verified HTTPS from
+`https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt`
+and saved locally as ignored `certs/supabase-ca.crt`. The local `.env` points to
+that file. Using it now passes database authentication and verified TLS connection checks.
+The migration and Supabase workflow validation are recorded in `MIGRATION_REPORT.md`.
+Supabase documents its CA requirement in [SSL enforcement](https://supabase.com/docs/guides/platform/ssl-enforcement).
+
+Run `python scripts/check_connection.py` for a credential-safe diagnostic. It
+opens a read-only transaction and runs only `SELECT 1`; it does not initialize
+tables, migrate data, or print connection strings or raw driver errors.
+
+### Automated migration validation
 
 ```bash
-python3 -m venv .venv
+python -m pytest -q
 ```
 
-Activate the environment on macOS or Linux:
+Without `TEST_DATABASE_URL`, configuration checks run and PostgreSQL integration
+tests explicitly skip. For Supabase validation, put a **separate development
+project's** direct/session-pooler URI in `TEST_DATABASE_URL` in `.env`; configure
+its certificate through `PGSSLROOTCERT`. The role must create/drop schemas.
+Tests create a unique `phishsense_test_*` schema, use synthetic accounts and
+scenarios, then drop only that generated schema. They exercise registration,
+duplicate registration, password verification, authentication, import idempotency,
+ten-email completion, classification, reasoning, confidence, feedback, progress,
+invalid/replayed submissions, constraints, rollback, and SQLite migration.
+No public application tables or real user records are used by these tests.
+Do not treat skipped tests as evidence of a successful migration.
 
-```bash
-source .venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
-python3 -m pip install flask
-```
-
-### 4. Initialize the Database
-
-For a new local installation, create the SQLite database using:
-
-```bash
-sqlite3 phishsense.db < schema.sql
-```
-
-Verify that the database tables exist:
-
-```bash
-sqlite3 phishsense.db ".tables"
-```
-
-Do not rerun the schema initialization command against an existing database without reviewing its contents and creating a backup.
-
-### 5. Import Training Scenarios
-
-```bash
-python3 import_scenarios.py
-```
-
-### 6. Start the Application
-
-```bash
-python3 app.py
-```
-
-Open the local address displayed by Flask, typically:
-
-http://127.0.0.1:5000
-
-The application currently uses a development configuration and is not intended for public deployment.
+After automated tests pass against Supabase, migrate the approved source and
+manually verify login with an existing account, Evercrest inbox submission,
+feedback and progress. Record results without capturing credentials or personal
+data. Keep SQLite backups for rollback; to run the old SQLite application, use a
+separate checkout of the Milestone 3 version. New PostgreSQL responses are not
+synchronized back to SQLite.
 
 ## Testing and Validation
 
@@ -365,7 +446,7 @@ The application currently uses a development configuration and is not intended f
 
 Initial SQLite response recording has also been verified.
 
-Further testing is needed for complete-session behavior, additional users, and future adaptive functionality.
+The complete Supabase suite contains 52 tests. See [TESTING.md](TESTING.md) for coverage, isolation, and validation instructions.
 
 ## Planned Development
 
@@ -373,8 +454,8 @@ Future milestones will focus on:
 
 1. Improving the realism and complexity of simulated email scenarios.
 2. Introducing safe, realistic-looking links and attachment representations.
-3. Implementing adaptive scenario selection.
-4. Developing the non-adaptive control-group training workflow.
+3. Expanding and piloting the approved scenario pool.
+4. Preparing approved participant enrollment and research administration.
 5. Adding pre-training and post-training assessments.
 6. Developing the learner results dashboard.
 7. Implementing training history and performance visualization.
@@ -388,7 +469,6 @@ PhishSense remains an early-stage prototype.
 
 The following features are not yet complete:
 
-- Adaptive difficulty adjustment
 - Gamification and company-budget tracking
 - Full results and history dashboards
 - Pre-test and post-test workflows
@@ -405,11 +485,25 @@ The current prototype demonstrates the core training experience and establishes 
 | v0.1.0 | Milestone 1 | SQLite database foundation |
 | v0.2.0 | Milestone 2 | User authentication and learner dashboard |
 | v0.3.0 | Milestone 3 | Simulated inbox, classification, feedback, and response tracking |
+| v0.4.0 | Milestone 4 | Supabase migration, adaptive/control workflows, matched pairs, and recurring-mistake tracking |
 
 ## Project Status
 
-**Current Version: v0.3.0 — Milestone 3 Prototype**
+**Current Version: v0.4.0 — Milestone 4 Adaptive Training**
 
 PhishSense is under active development as part of a master's capstone project.
 
 The current application provides a functional phishing-awareness training workflow. Future development will expand the adaptive learning, research evaluation, and gamification components.
+
+## Milestone 4 submission materials
+
+- [Research implementation update](research/Milestone4_Research_Progress.md)
+- [Automated testing and submission validation](TESTING.md)
+- [Adaptive and control rules](ADAPTIVE_TRAINING.md)
+- [Recurring-mistake tracking](MISTAKE_TRACKING.md)
+- [Scenario integration and capacity](SCENARIO_INTEGRATION.md)
+
+Local recording helpers, walkthroughs containing synthetic login details, raw
+unreviewed datasets, credentials, database files and generated artifacts are
+intentionally excluded from version control. Never rerun migrations/imports on an
+existing installation merely to demonstrate the application.
