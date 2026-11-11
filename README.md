@@ -1,8 +1,9 @@
 # PhishSense
 
-**Version:** 0.4.0 — Milestone 4 Adaptive Training
+**Version:** v0.4.0 (Milestone 4)
 
-**Status:** Active Development  
+**Status:** Milestone 4 complete; development prototype
+
 **Project Type:** Master's Capstone — Cybersecurity Awareness Training
 
 ## Project Overview
@@ -17,7 +18,7 @@ The long-term objective is to evaluate whether adaptive phishing-awareness train
 
 ## Current Development Version
 
-**PhishSense v0.4.0 — Milestone 4 Adaptive Training**
+**PhishSense v0.4.0 (Milestone 4)**
 
 This version adds approved rule-based adaptation, fixed control scheduling, recurring-mistake summaries, and Supabase PostgreSQL storage.
 
@@ -79,7 +80,7 @@ These features are not yet implemented.
 
 ## Database Architecture
 
-PhishSense uses four primary relational tables.
+PhishSense uses five application tables: users, training_scenarios, training_sessions, training_responses, and difficulty_evaluations.
 
 ### Users
 
@@ -118,11 +119,19 @@ Records individual learner responses, including:
 - Response time
 - Scenario difficulty at the time of the response
 
+### Difficulty Evaluations
+
+Stores each five-response block's accuracy, median response time, mean confidence,
+previous/proposed/applied difficulty, decision reason, group snapshot, and protocol
+version. Protocol versions describe training behavior; they are independent of the
+application release version.
+
 ### Database Relationships
 
 - One user can have multiple training sessions.
 - One training session can contain multiple responses.
 - Each training response references a training scenario.
+- Each difficulty evaluation references its training session.
 
 Foreign-key relationships are used to maintain referential integrity.
 
@@ -157,7 +166,7 @@ The current training workflow follows these steps:
 2. The learner accesses the PhishSense dashboard.
 3. The learner opens the Evercrest Group employee inbox.
 4. The application presents ten training scenarios.
-5. The learner selects an unread email.
+5. The learner opens the next available email; later emails remain locked.
 6. The learner reviews the sender, subject, and message content.
 7. The learner classifies the message as phishing or legitimate.
 8. The learner provides a written explanation.
@@ -216,6 +225,20 @@ Completed:
 - Verified that the inbox updates after a completed response.
 
 The Milestone 3 prototype establishes the foundation for adaptive training and future gamification.
+
+### Milestone 4: Adaptive Training and Recurring Mistakes
+
+Completed:
+
+- Migrated SQLite storage to Supabase PostgreSQL with verified TLS.
+- Added five-response experimental difficulty evaluation and fixed control scheduling.
+- Preserved ten-email sequential training and existing response feedback/progress.
+- Expanded the approved scenario pool to 27 emails and enforced advanced matched-pair exclusions.
+- Added learner-specific recurring-mistake counts and a read-only summary.
+- Validated the completed application with 52 passing Supabase tests and synthetic browser workflows.
+
+The release is **v0.4.0 (Milestone 4)**. Researcher dashboards, data exports, and
+additional research administration remain deferred to Milestone 5.
 
 ## Research Overview
 
@@ -288,7 +311,11 @@ The repository includes the following components:
 
 | File or Directory | Purpose |
 |---|---|
+| `VERSION` | Application release version (independent of training protocol versions) |
 | `app.py` | Main Flask application |
+| `adaptive.py` | Approved adaptive/control selection and difficulty rules |
+| `mistakes.py` | Read-only recurring-mistake summaries |
+| `database.py` | Verified-TLS PostgreSQL connections |
 | `schema.sql` | PostgreSQL database schema |
 | `import_scenarios.py` | Imports approved training scenarios |
 | `templates/` | HTML application templates |
@@ -306,8 +333,8 @@ SQLite database files, local database backups, and the Python virtual environmen
 ## Supabase PostgreSQL setup
 
 The runtime now uses PostgreSQL through psycopg. Supabase authentication is not
-used: Flask sessions and existing Werkzeug password hashes are retained. HTML
-and the Evercrest training interface is preserved. The existing SQLite data has been migrated and the adaptive/control workflows tested
+used: Flask sessions and existing Werkzeug password hashes are retained. The
+Evercrest training interface is preserved. The existing SQLite data has been migrated and the adaptive/control workflows tested
 against Supabase. See `MIGRATION_REPORT.md` for validation details.
 
 1. Create a separate Supabase development project. Obtain the direct or **session
@@ -332,7 +359,7 @@ against Supabase. See `MIGRATION_REPORT.md` for validation details.
    initial development. RLS is enabled with no Data API policies, so browser
    anonymous/authenticated roles cannot read learner data. A restricted backend
    role needs explicit grants and an appropriate RLS policy before use.
-4. Review `schema.sql` and confirm the target has none of the four application
+4. Review `schema.sql` and confirm the target has none of the five application
    tables. After approving that target, initialize it once:
 
    ```bash
@@ -489,11 +516,14 @@ The current prototype demonstrates the core training experience and establishes 
 
 ## Project Status
 
-**Current Version: v0.4.0 — Milestone 4 Adaptive Training**
+**Current Version: v0.4.0 (Milestone 4)**
+
+Release metadata is recorded in [VERSION](VERSION); the corresponding annotated
+Git tag is `v0.4.0`. See [release notes](releases/v0.4.0.md).
 
 PhishSense is under active development as part of a master's capstone project.
 
-The current application provides a functional phishing-awareness training workflow. Future development will expand the adaptive learning, research evaluation, and gamification components.
+The current application includes adaptive and fixed-control training, immediate feedback, recurring-mistake summaries, and progress recording. Future development will address research administration, evaluation, and other planned features.
 
 ## Milestone 4 submission materials
 

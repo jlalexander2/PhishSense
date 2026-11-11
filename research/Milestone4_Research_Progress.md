@@ -1,5 +1,7 @@
 # PhishSense: Milestone 4 implementation progress
 
+**Build:** v0.4.0 (Milestone 4)
+
 Milestone 4 implements rule-based adaptive training alongside a fixed,
 non-adaptive control workflow. The planned research comparison remains 15
 experimental learners and 15 control learners. No participant outcomes or
