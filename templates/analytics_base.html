@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Training Results{% endblock %} | PhishSense</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f4f7fb; color: #14213d; }
+        header { background: #14213d; color: white; }
+        nav { max-width: 1140px; margin: auto; padding: 22px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
+        nav strong { font-size: 22px; margin-right: auto; }
+        nav a { color: white; font-size: 14px; }
+        main { max-width: 1140px; margin: 36px auto; padding: 0 24px 48px; }
+        h1 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -.8px; margin-bottom: 12px; }
+        h2 { font-size: 21px; }
+        p { line-height: 1.7; }
+        a { color: #174ea6; text-underline-offset: 3px; }
+        a:focus-visible, button:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+        .intro { color: #52637b; }
+        .cards { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; margin: 28px 0; }
+        .card, section { background: white; border: 1px solid #dce3ed; border-radius: 12px; padding: 24px; }
+        .card span { display: block; font-size: 13px; color: #52637b; }
+        .card strong { display: block; font-size: 30px; margin-top: 12px; }
+        section { margin-top: 24px; }
+        .scroll { overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; }
+        caption { text-align: left; font-size: 14px; color: #52637b; padding: 4px 0 18px; line-height: 1.7; }
+        th, td { text-align: left; padding: 14px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; line-height: 1.6; }
+        th { font-size: 13px; color: #52637b; }
+        .badge { display: inline-block; padding: 5px 10px; border-radius: 18px; background: #e5f3f2; color: #20686c; font-size: 13px; }
+        .incorrect { background: #fff0d7; color: #774700; }
+        .actions { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-top: 24px; }
+        button, .button { display: inline-block; padding: 13px 18px; background: #174ea6; color: white; border: 0; border-radius: 8px; font: inherit; cursor: pointer; text-decoration: none; }
+        .reasoning { white-space: pre-wrap; overflow-wrap: anywhere; color: #425774; }
+        details { margin-top: 10px; } summary { cursor: pointer; color: #174ea6; }
+        .empty { text-align: center; padding: 40px; }
+        @media(max-width:800px) { .cards { grid-template-columns:repeat(2,minmax(0,1fr)); } section,.card{padding:18px;} }
+        @media(max-width:420px) { .cards { grid-template-columns:1fr; } nav{gap:14px;} }
+    </style>
+</head>
+<body>
+<header><nav aria-label="Learner navigation"><strong>PhishSense</strong><a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('results') }}">My Results</a><a href="{{ url_for('history') }}">Training History</a><a href="{{ url_for('logout') }}">Log Out</a></nav></header>
+<main>{% block content %}{% endblock %}</main>
+</body>
+</html>

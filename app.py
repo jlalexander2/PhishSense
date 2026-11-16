@@ -2,13 +2,14 @@ import os
 import psycopg
 from database import get_db_connection
 from mistakes import learner_mistakes
+from performance import session_results, learner_history, complete_training_session
 from adaptive import (VERSION, select_scenarios, evaluate_session, control_scenarios,
                       ControlScheduleUnavailable, next_scenario, sequence_enforced, pair_safe)
 from psycopg.types.json import Jsonb
 from dotenv import load_dotenv
 import time
 import secrets
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
@@ -106,6 +107,45 @@ def get_training_scenario_ids():
         return []
 
     return scenario_ids
+
+
+@app.context_processor
+def training_actions():
+    if login_required() and "start_training_token" not in session:
+        session["start_training_token"] = secrets.token_urlsafe(32)
+    return {"start_training_token": session.get("start_training_token", "")}
+
+
+@app.route("/training/start", methods=["POST"])
+def start_training():
+    if not login_required():
+        return redirect(url_for("login"))
+    token = session.get("start_training_token")
+    if not token or not secrets.compare_digest(request.form.get("form_token", ""), token):
+        return "Invalid or expired session action.", 400
+    conn = get_db_connection()
+    try:
+        # Serialize starts; a double click cannot create two unfinished sessions.
+        conn.execute("SELECT user_id FROM users WHERE user_id=%s FOR UPDATE", (session["user_id"],))
+        current = get_active_training_session(conn)
+        if current and current["completed_at"] is None:
+            return redirect(url_for("inbox"))
+        pending = conn.execute("""SELECT * FROM training_sessions WHERE user_id=%s
+            AND session_type='training' AND completed_at IS NULL AND algorithm_version=%s
+            AND scenario_ids IS NOT NULL ORDER BY session_id DESC LIMIT 1""",
+            (session["user_id"], VERSION)).fetchone()
+        if pending:
+            session["training_session_id"] = pending["session_id"]
+            session["training_scenario_ids"] = pending["scenario_ids"]
+        else:
+            try:
+                if create_training_session(conn) is None:
+                    return "No training scenarios are currently available.", 503
+            except ControlScheduleUnavailable:
+                return "Scheduled training is not available yet. Please contact the study coordinator.", 503
+    finally:
+        conn.close()
+    return redirect(url_for("inbox"))
 
 
 @app.route("/")
@@ -296,21 +336,6 @@ def inbox():
             else 0
         )
 
-        if (
-            total_count > 0
-            and reviewed_count == total_count
-            and training_session["completed_at"] is None
-        ):
-            conn.execute(
-                """
-                UPDATE training_sessions
-                SET completed_at = CURRENT_TIMESTAMP
-                WHERE session_id = %s
-                  AND completed_at IS NULL
-                """,
-                (training_session["session_id"],)
-            )
-            conn.commit()
 
     finally:
         conn.close()
@@ -324,7 +349,8 @@ def inbox():
         total_count=total_count,
         progress_percent=progress_percent,
         sequence_locked=sequence_enforced(training_session),
-        next_scenario_id=next_scenario(training_session, reviewed_ids)
+        next_scenario_id=next_scenario(training_session, reviewed_ids),
+        training_session_id=training_session["session_id"]
     )
 
 
@@ -523,6 +549,8 @@ def training():
         )
 
         updated_ids = evaluate_session(conn, training_session)
+        complete = complete_training_session(conn, session["user_id"], training_session["session_id"],
+                                  get_training_scenario_ids())
         conn.commit()
         if updated_ids is not None:
             session['training_scenario_ids'] = updated_ids
@@ -540,7 +568,9 @@ def training():
         is_correct=bool(is_correct),
         user_answer=user_answer,
         confidence_level=confidence_level,
-        reasoning=reasoning
+        reasoning=reasoning,
+        training_session_id=training_session["session_id"],
+        training_complete=complete
     )
 
 
@@ -565,25 +595,47 @@ def mistakes():
 def results():
     if not login_required():
         return redirect(url_for("login"))
-
-    return (
-        '<h1>My Results</h1>'
-        '<p>Your training results will appear here '
-        'once the results dashboard is implemented.</p>'
-        '<a href="/dashboard">Back to Dashboard</a>'
-    )
+    raw_id = request.args.get("session_id")
+    if raw_id is not None:
+        try:
+            selected_id = int(raw_id)
+        except ValueError:
+            abort(400)
+        if selected_id <= 0:
+            abort(400)
+    else:
+        selected_id = None
+    conn = get_db_connection()
+    try:
+        conn.execute("SET TRANSACTION READ ONLY")
+        if selected_id is None:
+            latest = conn.execute("""SELECT session_id FROM training_sessions
+                WHERE user_id=%s AND session_type='training' AND completed_at IS NOT NULL
+                ORDER BY completed_at DESC, session_id DESC LIMIT 1""", (session["user_id"],)).fetchone()
+            selected_id = latest["session_id"] if latest else session.get("training_session_id")
+        summary = session_results(conn, session["user_id"], selected_id) if selected_id else None
+        if raw_id is not None and summary is None:
+            abort(404)
+    finally:
+        conn.close()
+    response = app.make_response(render_template("results.html", result=summary))
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @app.route("/history")
 def history():
     if not login_required():
         return redirect(url_for("login"))
-
-    return (
-        '<h1>Training History</h1>'
-        '<p>Your completed training sessions will appear here.</p>'
-        '<a href="/dashboard">Back to Dashboard</a>'
-    )
+    conn = get_db_connection()
+    try:
+        conn.execute("SET TRANSACTION READ ONLY")
+        history_data = learner_history(conn, session["user_id"])
+    finally:
+        conn.close()
+    response = app.make_response(render_template("history.html", history=history_data))
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 if __name__ == "__main__":

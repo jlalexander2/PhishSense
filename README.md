@@ -1,8 +1,8 @@
 # PhishSense
 
-**Version:** v0.4.0 (Milestone 4)
+**Version:** v0.5.0 (Milestone 5)
 
-**Status:** Milestone 4 complete; development prototype
+**Status:** Milestone 5 complete; development prototype
 
 **Project Type:** Master's Capstone — Cybersecurity Awareness Training
 
@@ -18,9 +18,9 @@ The long-term objective is to evaluate whether adaptive phishing-awareness train
 
 ## Current Development Version
 
-**PhishSense v0.4.0 (Milestone 4)**
+**PhishSense v0.5.0 (Milestone 5)**
 
-This version adds approved rule-based adaptation, fixed control scheduling, recurring-mistake summaries, and Supabase PostgreSQL storage.
+This version adds learner session results, performance analytics, reliable session completion, and training history while preserving Milestone 4 adaptive/control training.
 
 Implemented features include:
 
@@ -41,8 +41,11 @@ Implemented features include:
 - Performance-independent control schedule and sequential completion
 - Matched-pair exclusion for advanced scenarios
 - Learner-specific recurring-mistake tracking and read-only summary
+- Session accuracy, average response time, confidence distributions, and difficulty breakdowns
+- Learner-owned results, written reasoning review, and completed-session history
+- Atomic ten-response completion and protected next-session starts
 
-Researcher dashboards, exports, and additional research administration are deferred to Milestone 5. Gamification and formal assessments remain future work.
+Researcher dashboards, exports, additional research administration, gamification, and formal assessments remain future work.
 
 ## Evercrest Group: Simulated Training Environment
 
@@ -237,8 +240,14 @@ Completed:
 - Added learner-specific recurring-mistake counts and a read-only summary.
 - Validated the completed application with 52 passing Supabase tests and synthetic browser workflows.
 
-The release is **v0.4.0 (Milestone 4)**. Researcher dashboards, data exports, and
-additional research administration remain deferred to Milestone 5.
+The Milestone 4 release remains available as **v0.4.0**.
+
+### Milestone 5: Performance Analytics and Session Results
+
+T20–T24 are complete: session calculations, completed-session comparisons, atomic
+session completion, learner results and training history. The full Supabase suite
+passes 69 tests with zero failures and zero skips. See [MILESTONE5.md](MILESTONE5.md).
+Researcher dashboards, exports and research administration remain future work.
 
 ## Research Overview
 
@@ -315,6 +324,9 @@ The repository includes the following components:
 | `app.py` | Main Flask application |
 | `adaptive.py` | Approved adaptive/control selection and difficulty rules |
 | `mistakes.py` | Read-only recurring-mistake summaries |
+| `performance.py` | Session metrics, completion, and learner history |
+| `validation_support.py` | Fail-closed separation of test and production projects |
+| `scripts/validate_milestone5.py` | Credential-safe complete-suite validation |
 | `database.py` | Verified-TLS PostgreSQL connections |
 | `schema.sql` | PostgreSQL database schema |
 | `import_scenarios.py` | Imports approved training scenarios |
@@ -473,7 +485,7 @@ synchronized back to SQLite.
 
 Initial SQLite response recording has also been verified.
 
-The complete Supabase suite contains 52 tests. See [TESTING.md](TESTING.md) for coverage, isolation, and validation instructions.
+The complete Supabase suite contains 69 tests. See [TESTING.md](TESTING.md) for coverage, isolation, and validation instructions.
 
 ## Planned Development
 
@@ -484,8 +496,8 @@ Future milestones will focus on:
 3. Expanding and piloting the approved scenario pool.
 4. Preparing approved participant enrollment and research administration.
 5. Adding pre-training and post-training assessments.
-6. Developing the learner results dashboard.
-7. Implementing training history and performance visualization.
+6. Extending learner performance visualization.
+7. Developing approved researcher analytics and exports.
 8. Adding Evercrest Group gamification features.
 9. Expanding application testing.
 10. Preparing the application for approved research participation.
@@ -497,7 +509,7 @@ PhishSense remains an early-stage prototype.
 The following features are not yet complete:
 
 - Gamification and company-budget tracking
-- Full results and history dashboards
+- Researcher dashboards and exports
 - Pre-test and post-test workflows
 - Formal research-group assignment
 - Complete research evaluation
@@ -513,17 +525,18 @@ The current prototype demonstrates the core training experience and establishes 
 | v0.2.0 | Milestone 2 | User authentication and learner dashboard |
 | v0.3.0 | Milestone 3 | Simulated inbox, classification, feedback, and response tracking |
 | v0.4.0 | Milestone 4 | Supabase migration, adaptive/control workflows, matched pairs, and recurring-mistake tracking |
+| v0.5.0 | Milestone 5 | Performance analytics, atomic session completion, learner results, and training history |
 
 ## Project Status
 
-**Current Version: v0.4.0 (Milestone 4)**
+**Current Version: v0.5.0 (Milestone 5)**
 
 Release metadata is recorded in [VERSION](VERSION); the corresponding annotated
-Git tag is `v0.4.0`. See [release notes](releases/v0.4.0.md).
+Git tag is `v0.5.0`. See [release notes](releases/v0.5.0.md).
 
 PhishSense is under active development as part of a master's capstone project.
 
-The current application includes adaptive and fixed-control training, immediate feedback, recurring-mistake summaries, and progress recording. Future development will address research administration, evaluation, and other planned features.
+The current application includes adaptive and fixed-control training, immediate feedback, recurring-mistake summaries, progress recording, session results, and training history. Future development will address research administration, evaluation, and other planned features.
 
 ## Milestone 4 submission materials
 

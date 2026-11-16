@@ -10,6 +10,7 @@ from psycopg import sql
 import pytest
 
 import database
+from validation_support import require_test_target
 
 
 def test_missing_database_url(monkeypatch):
@@ -35,6 +36,7 @@ def postgres(monkeypatch):
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         pytest.skip("TEST_DATABASE_URL required for real PostgreSQL/Supabase tests")
+    url = require_test_target()
     monkeypatch.setenv("DATABASE_URL", url)
     original = database.get_db_connection
     namespace = "phishsense_test_" + uuid.uuid4().hex

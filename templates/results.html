@@ -1,0 +1,33 @@
+{% extends "analytics_base.html" %}
+{% block title %}Session Results{% endblock %}
+{% block content %}
+<h1>Session Results</h1>
+{% if not result %}
+<section class="empty"><h2>Your results start here</h2><p>Complete a training session to review your accuracy, response times and confidence.</p><a class="button" href="{{ url_for('inbox') }}">Open training inbox</a></section>
+{% elif not result.is_complete %}
+<section><h2>Session {{ result.session_id }} is still in progress</h2><p>{{ result.response_count }} responses are recorded. Final results and historical comparisons are available after completion.</p><a class="button" href="{{ url_for('inbox') }}">Return to Inbox</a></section>
+{% else %}
+<p class="intro">Session {{ result.session_id }} · Completed {{ result.completed_at.strftime('%b %d, %Y at %H:%M') }} UTC</p>
+<div class="cards">
+    <div class="card"><span>Classification accuracy</span><strong>{{ '%.1f%%'|format(result.accuracy_percent) if result.accuracy_percent is not none else '—' }}</strong></div>
+    <div class="card"><span>Correct classifications</span><strong>{{ result.correct_count }} / {{ result.response_count }}</strong></div>
+    <div class="card"><span>Average response time</span><strong>{{ '%.1f s'|format(result.average_response_time) if result.average_response_time is not none else '—' }}</strong></div>
+    <div class="card"><span>Average confidence</span><strong>{{ '%.2f / 5'|format(result.average_confidence) if result.average_confidence is not none else '—' }}</strong></div>
+</div>
+{% if not result.response_count %}<p>This session has a completion timestamp but no recorded responses. No performance percentage can be calculated.</p>{% endif %}
+<section><h2>Performance by difficulty</h2><div class="scroll"><table>
+<caption>Uses the difficulty presented with each response. A dash means there were no responses at that level.</caption>
+<thead><tr><th scope="col">Difficulty</th><th scope="col">Responses</th><th scope="col">Accuracy</th><th scope="col">Average time</th><th scope="col">Average confidence</th></tr></thead>
+<tbody>{% for row in result.by_difficulty %}<tr><td>{{ {'beginner':'Easy','intermediate':'Intermediate','advanced':'Hard'}[row.level] }}</td><td>{{ row.response_count }}</td><td>{{ '%.1f%%'|format(row.accuracy_percent) if row.accuracy_percent is not none else '—' }}</td><td>{{ '%.1f s'|format(row.average_response_time) if row.average_response_time is not none else '—' }}</td><td>{{ '%.2f / 5'|format(row.average_confidence) if row.average_confidence is not none else '—' }}</td></tr>{% endfor %}</tbody>
+</table></div><p class="intro">Response times include time away from the page; they measure elapsed time, not active reading time.</p></section>
+<section><h2>Confidence measurements</h2><div class="scroll"><table><caption>Confidence is a self-reported rating, not a probability of being correct.</caption><thead><tr>{% for entry in result.confidence_distribution %}<th scope="col">{{ entry.level }} / 5</th>{% endfor %}</tr></thead><tbody><tr>{% for entry in result.confidence_distribution %}<td>{{ entry.count }} responses</td>{% endfor %}</tr></tbody></table></div></section>
+<section><h2>Areas for further practice</h2>
+{% if result.practice_areas %}<ul>{% for area in result.practice_areas %}<li><strong>{{ area.label }}:</strong> {{ area.count }} in this session. {% if area.error_type == 'missed_phishing' %}Revisit the warning signs explained in the phishing examples you missed.{% else %}Compare the message with its established context before deciding it is phishing.{% endif %}</li>{% endfor %}</ul>{% else %}<p>No incorrect classifications were recorded in this session.</p>{% endif %}
+<p><a href="{{ url_for('mistakes') }}">View your cumulative mistake patterns</a> for recurring errors across training sessions.</p></section>
+<section><h2>Your classification outcomes</h2><div class="scroll"><table><caption>Answers and reasoning are shown in submission order. Outcomes use the correctness recorded with each response.</caption>
+<thead><tr><th scope="col">Email</th><th scope="col">Your answer</th><th scope="col">Expected answer</th><th scope="col">Outcome</th><th scope="col">Confidence</th><th scope="col">Time</th></tr></thead>
+<tbody>{% for r in result.responses %}<tr><td>{{ r.position }}. {{ r.subject }}<details><summary>Your reasoning</summary><p class="reasoning">{{ r.reasoning if r.reasoning else 'No reasoning was recorded.' }}</p></details></td><td>{{ 'Phishing' if r.user_answer else 'Legitimate' }}</td><td>{{ 'Phishing' if r.expected_answer else 'Legitimate' }}</td><td><span class="badge {{ 'incorrect' if not r.is_correct else '' }}">{{ 'Correct' if r.is_correct else 'Incorrect' }}</span></td><td>{{ r.confidence_level }} / 5</td><td>{{ '%.1f s'|format(r.response_time) }}</td></tr>{% endfor %}</tbody>
+</table></div></section>
+<div class="actions"><a href="{{ url_for('history') }}">Compare completed sessions</a><form method="POST" action="{{ url_for('start_training') }}"><input type="hidden" name="form_token" value="{{ start_training_token }}"><button type="submit">Start another session</button></form></div>
+{% endif %}
+{% endblock %}

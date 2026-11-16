@@ -1,4 +1,4 @@
-# Milestone 4 testing
+# PhishSense testing — Milestone 5
 
 Install the application requirements and configure credentials locally using
 `.env.example`. The example contains placeholders only; actual environment files,
@@ -9,10 +9,11 @@ python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-The full suite contains **52 tests**. Without TEST_DATABASE_URL, database tests
+The full suite contains **69 tests**. Without TEST_DATABASE_URL, database tests
 explicitly skip; those skips do not demonstrate successful Supabase validation.
 Set TEST_DATABASE_URL locally to a disposable Supabase development database or an
-authorized test target. TLS uses verify-full and the configured trusted CA.
+authorized test target in a different Supabase project from DATABASE_URL. The runner
+and fixtures reject production fallback and unverifiable project identities. TLS uses verify-full and the configured trusted CA.
 
 Database fixtures create unique phishsense_test_* schemas and synthetic records,
 then remove their schemas. They do not use real accounts or public training
@@ -49,3 +50,12 @@ reported zero connection failures and zero test connections left open. Previousl
 verified Chrome workflows cover both groups and the read-only mistake summary.
 No production imports, migrations, group assignments or server restarts were
 performed to prepare this submission.
+
+## Milestone 5 release validation
+
+Run `.venv/bin/python scripts/validate_milestone5.py` with an explicit separate
+TEST_DATABASE_URL. The complete suite passed 69 tests with zero failures and zero
+skips in 295.34 seconds on November 15, 2026. Production table hashes remained unchanged and all
+generated test schemas were removed. Coverage additionally includes session
+metrics, historical comparisons, atomic/idempotent completion, learner results,
+reasoning escaping, access isolation, and protected next-session starts.

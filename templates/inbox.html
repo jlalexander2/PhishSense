@@ -427,6 +427,11 @@
             <div class="completion-card">
 
                 <h3>Training Complete!</h3>
+                <p><a href="{{ url_for('results',session_id=training_session_id) }}">View Session Results</a></p>
+                <form method="POST" action="{{ url_for('start_training') }}">
+                    <input type="hidden" name="form_token" value="{{ start_training_token }}">
+                    <button type="submit">Start another session</button>
+                </form>
 
                 <p>
                     You've reviewed all the emails in your Evercrest inbox.

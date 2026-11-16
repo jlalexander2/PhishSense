@@ -255,6 +255,10 @@
 
         </div>
 
+        {% if training_complete %}
+        <p>Your ten-email session is complete. <a href="{{ url_for('results',session_id=training_session_id) }}">View Session Results</a></p>
+        {% endif %}
+
         <div class="actions">
             <a
                 href="{{ url_for('inbox') }}"
