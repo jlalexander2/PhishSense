@@ -1,0 +1,849 @@
+{
+  "status": "DRAFT — REVIEW SANDBOX ONLY; NOT APPROVED FOR PARTICIPANTS",
+  "base_dataset_sha256": "f63d5e4493ace8626e576313f8d7c1787d8cc2a639e318cd35b230608e023132",
+  "notes": [
+    "Approved source files remain byte-for-byte unchanged. All numeric IDs are copied from original scenarios into an isolated review schema; no accounts/responses/history are copied.",
+    "All revised scenarios require participant-use approval. Priority evidence reviews: phish-0052, phish-0075, phish-0059.",
+    "Legacy target-category/source metadata are retained; any source-brand category alignment needs explicit approval before activation.",
+    "Browser-only review may display correct classifications in reviewer controls; normal learner training never receives those labels before feedback."
+  ],
+  "scenarios": [
+    {
+      "source_id": "phish-0001",
+      "base_sha256": "7da8a90a6342fb739eb56920078a7d78c090a11df17a165fc0a6acfcabbe8b16",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "Reapprove the payroll-account or business-subscription framing; do not silently replace original research stimuli."
+      ],
+      "proposed": {
+        "source_id": "phish-0001",
+        "sender_name": "Northbridge Account Services",
+        "sender_email": "security@northbridge-alerts.example",
+        "subject": "Payroll account: verification requested",
+        "email_body": "Hello,\n\nYour payroll account profile is awaiting verification. Unless this is completed within 24 hours, access to your account will be suspended.\n\n[[link:Review account details|https://northbridge-account-review.example/profile/verify]]\n\nPlease complete the verification before the account restriction takes effect.\n\nAccount notice reference: NB-2841. This message was sent to the contact address held on your account. If you have already completed the review, keep the confirmation reference with your account records.\n\nAccount Services\nNorthbridge",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Credential Harvesting",
+        "phishing_technique": "Link Spoofing with Urgency",
+        "target_category": "Banking",
+        "difficulty_level": "beginner",
+        "explanation": "The email threatens account restriction within 24 hours and directs verification to northbridge-account-review.example, rather than the independently listed northbridge-bank.example. Do not supply account details there; use the existing bank route. The authored phishing evidence is the action/destination mismatch reinforced by pressure, not a generic rule that all deadlines are malicious.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest employees use Northbridge Bank for the optional payroll account service. The employee directory lists northbridge-bank.example as its website.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0052",
+      "base_sha256": "9f5c3cce96d2a19acd204e5a20cf1cc0e43c00223ce6c0ec132a40287be8a35f",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "Priority reapproval: new independent workflow evidence repairs ambiguity in the original. Existing intermediate label is retained provisionally, not empirically revalidated."
+      ],
+      "proposed": {
+        "source_id": "phish-0052",
+        "sender_name": "Avery Lane | Bracken Supply",
+        "sender_email": "billing@bracken-supply.example",
+        "subject": "Invoice 7832 — remittance details for the next payment run",
+        "email_body": "Hi,\n\nI have attached the copy of invoice 7832 for your next payment run. Our collections team is using a different beneficiary account for this invoice; the details in the document end 9168.\n\n[[attachment:Invoice_7832.pdf|Invoice reference: 7832. Beneficiary account ending: 9168.]]\n\nPlease use those details for this payment rather than the beneficiary currently in your supplier register. We can send the register amendment once the remittance has cleared, so there is no need to hold this invoice for the record update.\n\nReply with the remittance reference when it is available and I will reconcile the balance.\n\nRegards,\nAvery Lane\nAccounts Receivable | Bracken Supply",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Fake Invoice/Download",
+        "phishing_technique": "Suspicious Attachment",
+        "target_category": "SMBs / Finance",
+        "difficulty_level": "intermediate",
+        "explanation": "This authored phishing scenario asks the learner to use beneficiary 9168 instead of registered beneficiary 7042 and to postpone the required verification/update until after payment. A plausible invoice reference and professional PDF do not authorize a beneficiary change. Hold the payment and verify through the existing supplier contact. The PDF extension itself is not the phishing evidence.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Supplier register: Bracken Supply; invoice 7832 is awaiting payment. The approved beneficiary ends 7042. Finance must verify and record beneficiary changes through the existing supplier contact before payment.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0009",
+      "base_sha256": "197e60d74e6f454f9db682a0e0f8c2b2ae0d4ec58b3393c5079319eb9963594b",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "phish-0009",
+        "sender_name": "Morgan Ellis | Chief Executive",
+        "sender_email": "morgan.ellis@evercrest-internal.example",
+        "subject": "Payment instruction for this afternoon",
+        "email_body": "Hello,\n\nPlease arrange a $10,000 wire transfer by end of day. The beneficiary details are in the attached payment brief. I need this cleared before this afternoon's close.\n\n[[attachment:payment_brief.pdf]]\n\nSend me the confirmation once it has been processed.\n\nMorgan Ellis\nChief Executive Officer\nEvercrest Group",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Financial Scam",
+        "phishing_technique": "Business Email Compromise",
+        "target_category": "Corporate",
+        "difficulty_level": "intermediate",
+        "explanation": "The request for a wire transfer uses evercrest-internal.example instead of the recorded employee domain evercrest-group.example and invokes executive authority to obtain payment. Verify through the separate established approval route before acting; a title, amount or deadline alone is not authorization.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest employee addresses use evercrest-group.example. Finance verifies payment instructions through its existing approval workflow.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0057",
+      "base_sha256": "9b60f9523a48ae114ec6079df385518535ef6dfcf76aa20d21f85138ffce08dd",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "phish-0057",
+        "sender_name": "Hearthwell Rewards",
+        "sender_email": "rewards@hearthwell-offer.example",
+        "subject": "Your $500 workplace gift card is available",
+        "email_body": "Hello,\n\nYou have been selected for a $500 Hearthwell gift card through our workplace rewards offer. Claim your card today using the page below.\n\n[[link:Claim your gift card|https://hearthwell-rewards-claim.example/redeem/500]]\n\nUnclaimed cards will be returned to the promotion pool at the end of the day.\n\nOffer reference: HW-5720. The card can be used for office purchases or shared with your team. Keep the redemption confirmation with your order records when planning how the card will be used.\n\nRewards Team\nHearthwell",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Reward Scam",
+        "phishing_technique": "Lookalike Domain",
+        "target_category": "Retail",
+        "difficulty_level": "beginner",
+        "explanation": "The unsolicited reward is inconsistent with the supplied context: no promotion was entered, and the claim destination differs from the recorded retailer site. Verify through the retailer’s existing route rather than the offered claim page. A professional reward message is not evidence of authorization.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Hearthwell is a fictional retailer. Its listed retail website is hearthwell.example; you have not entered a reward promotion.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0055",
+      "base_sha256": "d79e1ebe58cb4a4e7dace211fd97c22cdd7e6dfd7ea529868beee15b318dcdff",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "phish-0055",
+        "sender_name": "Parcelway Delivery Support",
+        "sender_email": "support@parcelway-delivery.example",
+        "subject": "Delivery exception — reception details required",
+        "email_body": "Hello,\n\nOur driver could not complete today’s delivery because the reception details on the shipment need confirmation.\n\nPlease open the attached shipping form, enter the receiving contact and office location, and return the completed details to this thread. We can then arrange another delivery attempt.\n\n[[attachment:shipping_form.exe|File type: Windows application.]]\n\nIf reception has already contacted us about this shipment, include the delivery reference in your reply.\n\nShipment reference: PW-5812. The receiving office will be notified once the address record has been updated.\n\nRegards,\nDelivery Support\nParcelway",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Malware Delivery",
+        "phishing_technique": "Executable Attachment",
+        "target_category": "E-commerce",
+        "difficulty_level": "beginner",
+        "explanation": "The delivery message requests an executable shipping form. Unexpected executable attachments are unsafe and should not be opened.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "You receive office deliveries through Evercrest reception.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0002",
+      "base_sha256": "811cb3ece693b86189eb0c9612b39ca777c32fe56e62fb51c121862dba6f39ec",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "phish-0002",
+        "sender_name": "Bracken Accounts",
+        "sender_email": "billing@bracken-payments.example",
+        "subject": "Invoice 3921 — overdue balance",
+        "email_body": "Hello,\n\nInvoice 3921 remains unpaid on your account. Please open the invoice copy below and arrange payment against the outstanding balance.\n\n[[attachment:invoice.exe]]\n\nReply with the payment reference once the balance has been settled.\n\nAccount reference: EG-3921. If your purchase-order reference differs, include it with your remittance so that we can match the payment to the correct office account. The item will remain on your statement until reconciliation is complete.\n\nAccounts Receivable\nBracken Supply",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Malware Delivery",
+        "phishing_technique": "Executable Attachment",
+        "target_category": "SMBs / Finance",
+        "difficulty_level": "beginner",
+        "explanation": "The invoice is presented as invoice.exe, a Windows executable rather than an invoice document. Do not run an application to read a supplier invoice. Confirm the balance through the existing supplier contact. No executable is supplied here.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "You review supplier invoices for Evercrest procurement.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0003",
+      "base_sha256": "2f851e3114d6bf21b88df29f5115d1a6f233950cfad254f21e2840e4c19b426a",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "phish-0003",
+        "sender_name": "Evercrest Cloud Accounts",
+        "sender_email": "no-reply@evercrest-cl0ud.example",
+        "subject": "Unusual sign-in activity on your work account",
+        "email_body": "Hello,\n\nWe recorded a sign-in to your work account from Russia. If this was not you, reset your password using the account recovery page below.\n\n[[link:Review sign-in and reset password|https://evercrest-cl0ud.example/account/recovery]]\n\nAccount: your Evercrest work identity\n\nAccount Protection\nEvercrest Cloud",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Credential Harvesting",
+        "phishing_technique": "Homoglyph Link Spoofing",
+        "target_category": "Google",
+        "difficulty_level": "intermediate",
+        "explanation": "The independently supplied service domain is evercrest-cloud.example, while the sender and recovery destination use evercrest-cl0ud.example with a zero. The sign-in claim does not justify entering credentials at that lookalike. Open the existing service route and inspect the account activity there.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "The employee service directory lists Evercrest Cloud at evercrest-cloud.example.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0075",
+      "base_sha256": "a4263f28cf76601ab0114433a553d16825419321c928f595e63cae2153bd5e0c",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "Priority reapproval: new independent workflow evidence repairs ambiguity in the original. Existing intermediate label is retained provisionally, not empirically revalidated."
+      ],
+      "proposed": {
+        "source_id": "phish-0075",
+        "sender_name": "Priya Shah | Ridgehaven Components",
+        "sender_email": "accounts@ridgehaven-components.example",
+        "subject": "Invoice 4567 — reconciliation worksheet and review record",
+        "email_body": "Hello,\n\nWe have opened a reconciliation item against invoice 4567. The attached worksheet lists the lines we would like your team to review.\n\n[[attachment:Dispute_4567.doc|Invoice reference: 4567. Worksheet for line-item comments.]]\n\nPlease open the review record below before returning the worksheet. The page asks for your Evercrest work email and password to associate the comments with the purchasing account; a separate supplier login will not attach them to this item.\n\n[[link:Review invoice 4567|https://accounts.ridgehaven-review.example/invoices/4567]]\n\nOnce the record is associated, reply with the completed worksheet and we will update the invoice balance.\n\nKind regards,\nPriya Shah\nAccounts | Ridgehaven Components",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Fake Invoice/Download",
+        "phishing_technique": "Suspicious Attachment",
+        "target_category": "SMBs / Finance",
+        "difficulty_level": "intermediate",
+        "explanation": "The evidence is the request to enter an Evercrest work password at accounts.ridgehaven-review.example, outside the supplier portal and sign-in workflow supplied in the directory. The invoice number and DOC worksheet do not authorize that credential request. Do not enter credentials; verify the dispute through the existing supplier record. A DOC attachment alone would not justify the phishing classification.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Supplier directory: Ridgehaven Components. Invoice disputes use billing.ridgehaven-components.example under the existing supplier reference. Evercrest staff must not enter their work-account password into a supplier site outside the recorded sign-in workflow.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "phish-0059",
+      "base_sha256": "b99310aa4a9847c9d37114d4ecaa965c0582758a7f8d99fdb163d602eeadc60c",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "Priority reapproval: new independent workflow evidence repairs ambiguity in the original. Existing intermediate label is retained provisionally, not empirically revalidated."
+      ],
+      "proposed": {
+        "source_id": "phish-0059",
+        "sender_name": "Morgan Ellis",
+        "sender_email": "morgan.ellis@evercrest-group.example",
+        "subject": "Supplier payment for this afternoon’s run",
+        "email_body": "Hi,\n\nPlease include the $15,000 payment for the new facilities supplier in this afternoon’s run. The attached document contains the beneficiary details and the reference to use.\n\n[[attachment:payment.doc|New supplier payment instructions. Amount: $15,000.]]\n\nProcurement is still completing the supplier record. Use the details in the document for this payment, and we can attach the completed approval to the register afterward.\n\nPlease send me the payment confirmation when it is available so I can close the facilities handover item.\n\nThanks,\nMorgan Ellis\nChief Executive Officer\nEvercrest Group",
+        "is_phishing": 1,
+        "original_label": "phishing",
+        "phishing_intent": "Financial Scam",
+        "phishing_technique": "Business Email Compromise",
+        "target_category": "Corporate",
+        "difficulty_level": "intermediate",
+        "explanation": "The request bypasses the stated requirement to approve a new supplier before payment and proposes adding approval afterward. An internal-looking executive identity, plausible amount and business deadline do not replace authorization. Withhold the payment and confirm through the established finance workflow and a known contact. This is the authored BEC pretext; urgency or a DOC extension alone is not enough evidence.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest Finance procedure: new suppliers and beneficiary changes must be approved in the supplier register before payment. A message from an executive does not replace that approval.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-001",
+      "base_sha256": "bc5b9b86cf07c19a53899a441d238e3cd155a82d4452a179b9259e70d6109c37",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "New legitimate link or expected attachment balances presentation cues. Reapprove this expanded evidence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-001",
+        "sender_name": "Forgewell Billing",
+        "sender_email": "billing@forgewell.example",
+        "subject": "Evercrest development workspace — monthly invoice",
+        "email_body": "Hello,\n\nThe monthly invoice for the Evercrest development workspace is available for your review. It covers the existing plan and will follow the payment arrangement already recorded for the organization.\n\n[[link:View workspace invoice|https://billing.forgewell.example/organizations/evercrest/invoices]]\n\nYou can also open your saved Forgewell bookmark and choose Organization settings, then Billing, to view the invoice history. If you have a purchase-order question, add the invoice reference to your existing procurement record.\n\nThank you,\nBilling Operations\nForgewell",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "GitHub",
+        "difficulty_level": "intermediate",
+        "explanation": "The provider, billing portal and existing subscription arrangement match the supplied procurement directory. This legitimate invoice message offers a recorded account route without asking for a new beneficiary, password disclosure or approval bypass. The presence of a link or an invoice does not determine the classification.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Procurement directory: Forgewell is Evercrest’s source-hosting provider. Its recorded billing portal is billing.forgewell.example. The development workspace uses the existing monthly subscription arrangement.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-002",
+      "base_sha256": "4f447744df685ff05a85bca7c4a9aaaa626e9f1b6daa61872183673465483e8b",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-002",
+        "sender_name": "Casey Morgan | People Operations",
+        "sender_email": "casey.morgan@evercrest-group.example",
+        "subject": "Tomorrow’s team meeting — agenda items",
+        "email_body": "Hello everyone,\n\nA reminder that our weekly team meeting is tomorrow at 09:00. The room and meeting details remain in the existing calendar invitation.\n\nPlease add any agenda items to the team notes before 16:00 today. We will begin with the staffing update, followed by project dependencies and questions for the coming week.\n\nIf you cannot attend, let your team lead know so that decisions affecting your work can be shared afterward.\n\nThank you,\nCasey Morgan\nPeople Operations\nEvercrest Group",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Corporate",
+        "difficulty_level": "beginner",
+        "explanation": "The meeting is already on the learner’s work calendar, and the message refers to that existing invitation and team notes. A deadline to add agenda items is consistent with routine coordination. This is legitimate within the supplied context, not because an internal-looking sender alone proves authenticity.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "The weekly Evercrest team meeting is already on your work calendar.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-003",
+      "base_sha256": "470cf9051dcb82baf76e78bfe21e046738e6eb3a82fbc963094560dcde186f44",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "New legitimate link or expected attachment balances presentation cues. Reapprove this expanded evidence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-003",
+        "sender_name": "Hearthwell Business Orders",
+        "sender_email": "orders@hearthwell.example",
+        "subject": "Office order 45678 has shipped",
+        "email_body": "Hello,\n\nOffice supply order 45678 has shipped and is expected to arrive in three to five working days. Reception will receive the delivery at the usual office address.\n\n[[link:View order and delivery status|https://business.hearthwell.example/orders/45678]]\n\nPlease let reception know if your department will collect the items directly. The order summary is also available through your saved Hearthwell business-account bookmark under Orders.\n\nIf any items are missing when the delivery arrives, quote order 45678 through the existing purchasing record so we can follow it up.\n\nThank you,\nBusiness Customer Services\nHearthwell",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "E-commerce",
+        "difficulty_level": "intermediate",
+        "explanation": "The order number, supplier portal and delivery arrangement match the independent purchasing record. The request is ordinary delivery coordination, not a request for payment changes or credentials at a different destination. This is legitimate within the supplied context; a correct-looking order number alone would not prove authenticity outside it.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Purchasing record: office order 45678 was placed with Hearthwell. The recorded business portal is business.hearthwell.example; reception receives the shipment at Evercrest’s usual address.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-004",
+      "base_sha256": "3db275688f43ee34627e9a87ae4ad67541a739f599774fe717529e840c35740a",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-004",
+        "sender_name": "Evercrest Cloud Accounts",
+        "sender_email": "security@evercrest-cloud.example",
+        "subject": "Your work-account password was changed",
+        "email_body": "Hello,\n\nThe password for your Evercrest work account was successfully changed.\n\nIf you made this change, no further action is needed. If you did not, open the employee portal from your saved bookmark and contact the Service Desk using the directory details.\n\nAccount Protection\nEvercrest Cloud",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Email Service",
+        "difficulty_level": "intermediate",
+        "explanation": "The notification reports a completed password change and sends any follow-up through the existing employee portal and directory. It does not ask for the current password or a separate login destination. This is legitimate within the supplied service context; unexpected account changes should still be checked independently.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest uses Evercrest Cloud for work accounts. The employee directory lists evercrest-cloud.example as the service website.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-005",
+      "base_sha256": "b159e21ae12c18bb943fe36bc32a30cd11643deb0cded7e6b61a5d0336d2bc1b",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "Reapprove the payroll-account or business-subscription framing; do not silently replace original research stimuli."
+      ],
+      "proposed": {
+        "source_id": "legit-005",
+        "sender_name": "Streamwell Business Billing",
+        "sender_email": "billing@streamwell.example",
+        "subject": "Evercrest media subscription — renewal confirmation",
+        "email_body": "Hello,\n\nThe Evercrest media team's Streamwell subscription has renewed on its existing plan.\n\nThe renewal receipt and billing details are available in your existing account. Open your saved Streamwell bookmark and select Billing to review the record.\n\nThank you,\nBusiness Billing\nStreamwell",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Streaming Service",
+        "difficulty_level": "intermediate",
+        "explanation": "The renewal matches the recorded business media subscription and existing payment arrangement. Billing is accessed through the saved service bookmark rather than an email login link. This is legitimate within the supplied purchasing context, not because a renewal notice alone is trustworthy.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest maintains a Streamwell subscription for its internal media team. The service is listed at streamwell.example in the purchasing directory.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-006",
+      "base_sha256": "63aa7aec7f8e110b4739e73d7ca35e39db7b0111feeb6f7742c2c2e9f7318470",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-006",
+        "sender_name": "Hearthwell Business News",
+        "sender_email": "news@hearthwell.example",
+        "subject": "Welcome to Hearthwell business updates",
+        "email_body": "Hello,\n\nThank you for subscribing to Hearthwell business updates while arranging supplies for your office. Our weekly roundup covers product availability, office planning ideas and seasonal offers for business customers.\n\nYour first edition will arrive next week. Each edition includes a summary of the items featured so that you can decide what is relevant to your team’s purchasing plans.\n\nIf a colleague handles your department’s orders, please share the roundup with them through your usual internal channel.\n\nKind regards,\nBusiness Communications\nHearthwell",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Retail",
+        "difficulty_level": "beginner",
+        "explanation": "The newsletter follows the subscription described in the learner-visible context and does not request credentials, payment or installation. This is legitimate within that scenario evidence. Outside it, an unexpected newsletter’s apparent branding is not proof of authenticity.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "You subscribed to Hearthwell’s business newsletter while arranging office supplies.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-007",
+      "base_sha256": "7636881c991c9869213a1478076ec2a71fc1b47182372afc8b6ba8c2d4b3f496",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "New legitimate link or expected attachment balances presentation cues. Reapprove this expanded evidence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-007",
+        "sender_name": "Aster Air Reservations",
+        "sender_email": "reservations@aster-air.example",
+        "subject": "Your New York business-trip itinerary",
+        "email_body": "Hello,\n\nYour flight to New York is confirmed under booking reference EA281. The attached itinerary includes the travel summary for your records.\n\n[[attachment:Itinerary_EA281.pdf|Booking reference: EA281. Destination: New York. Check-in opens 24 hours before departure.]]\n\nPlease review the departure time through your existing travel account before travelling to the airport. Check-in opens 24 hours before departure, and any booking changes remain in that account.\n\nIf your travel plans change, contact your travel coordinator using the details already recorded in the booking.\n\nRegards,\nReservations\nAster Air",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Travel",
+        "difficulty_level": "beginner",
+        "explanation": "The booking reference, destination and expected PDF delivery match the supplied travel record. This is legitimate within the scenario evidence. A PDF is not intrinsically safe; verify the actual contents and use normal file-handling controls. No real attachment is provided in this application.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Your Evercrest travel booking includes Aster Air reference EA281 for New York. The booking record specifies delivery of a PDF itinerary. It remains accessible through your existing travel account.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "A recognizable file/action/destination mismatch, or a straightforward expected event, can be assessed against the displayed context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-008",
+      "base_sha256": "0cb5c8eda5e2eb4da4bab084c3058d4fa96bd5d75c7415335069dd53d5637a71",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-008",
+        "sender_name": "Evercrest Service Desk",
+        "sender_email": "service.desk@evercrest-group.example",
+        "subject": "Scheduled maintenance: 20 May, 01:00–03:00",
+        "email_body": "Hello everyone,\n\nScheduled system maintenance will take place on 20 May between 01:00 and 03:00. Some internal services may be briefly unavailable during that window.\n\nPlease save open work before the maintenance begins. Service status will be available through the existing employee portal.\n\nThank you,\nService Desk\nEvercrest Group",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "IT Users",
+        "difficulty_level": "intermediate",
+        "explanation": "The message announces a maintenance window and refers to the employee portal for status. It does not require a new login destination, password reply, download or software installation. This is legitimate within the supplied Evercrest service context.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest Service Desk publishes maintenance windows in the employee portal.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-009",
+      "base_sha256": "f602629b7c6f85aac54b78a10042a52a5368075d1f0ae695258b08588b193640",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "Reapprove the payroll-account or business-subscription framing; do not silently replace original research stimuli."
+      ],
+      "proposed": {
+        "source_id": "legit-009",
+        "sender_name": "Northbridge Statements",
+        "sender_email": "statements@northbridge-bank.example",
+        "subject": "Your monthly payroll-account statement is ready",
+        "email_body": "Hello,\n\nYour monthly account statement is ready to view or download.\n\nOpen your existing Northbridge app or saved website bookmark, sign in as usual, and choose Statements to review the document.\n\nStatements Team\nNorthbridge Bank",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Banking",
+        "difficulty_level": "intermediate",
+        "explanation": "The statement notification matches the fictional payroll-account service in the employee directory and directs access through the existing bank app or bookmark. It supplies no email login link or account-change request. This is legitimate within that context; use the known bank route to check unexpected notices.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Evercrest employees can use Northbridge Bank for the optional payroll account service. Its website is listed as northbridge-bank.example in the employee directory.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "legit-010",
+      "base_sha256": "b65829285483aa4dd6f4e9b3abeae9d8dab466f9e0350c4ea72c215d90b1b857",
+      "review_notes": [
+        "Confirm fictional sender identity, learner-visible context, revised explanation and difficulty equivalence before participant use.",
+        "New legitimate link or expected attachment balances presentation cues. Reapprove this expanded evidence before participant use."
+      ],
+      "proposed": {
+        "source_id": "legit-010",
+        "sender_name": "Jordan Reed | Project Delivery",
+        "sender_email": "jordan.reed@evercrest-group.example",
+        "subject": "Q2 project report — comments before tomorrow’s review",
+        "email_body": "Hi team,\n\nThe Q2 project report is ready for review in the team workspace. Please add your comments by 16:00 today so I can consolidate them before tomorrow’s planning discussion.\n\n[[link:Open Q2 project report|https://workspace.evercrest-group.example/projects/reporting/q2]]\n\nPlease comment on the working copy rather than sending separate attachments. If you access it through your saved workspace bookmark, the report is under Project reporting, then Q2.\n\nFlag unresolved dependencies in the report’s action column so that each owner can pick them up during the meeting.\n\nThanks,\nJordan Reed\nProject Delivery\nEvercrest Group",
+        "is_phishing": 0,
+        "original_label": "benign",
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Corporate",
+        "difficulty_level": "intermediate",
+        "explanation": "The requested comments, workspace destination and sender role match the independently supplied team record. A deadline and document link are not themselves phishing indicators. This is legitimate within the provided evidence; use the saved workspace route and stop if the actual destination or requested permissions differ.",
+        "review_status": "draft",
+        "source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "training_context": "Team workspace record: workspace.evercrest-group.example/projects/reporting/q2 contains the Q2 working report. Jordan Reed is the project delivery lead. Comments are collected in that existing folder before the planning discussion.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import."
+      },
+      "difficulty_rationale": "Compare the requested action and destination with an existing work record; a deadline, professional sender or ordinary attachment alone is insufficient.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-phish-001",
+      "base_sha256": "bf4cae76dc3f3d2e7874b4dd54bbafc271e60abd0ad0383b35370cf5ec567435",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-phish-001",
+        "sender_name": "Nina Patel | Alderbridge Collaboration",
+        "sender_email": "nina.patel@alderbridge.example",
+        "subject": "Alderbridge review pack: enable the document viewer",
+        "training_context": "Harbor project directory excerpt: partner Alderbridge; workspace workspace.alderbridge.example; task: comment on the shared review pack using your Evercrest guest identity. The directory entry is available from your existing project bookmark.",
+        "is_phishing": 1,
+        "phishing_intent": "Unauthorized mailbox and file access",
+        "phishing_technique": "Consent phishing with excessive delegated permissions",
+        "target_category": "Evercrest Group / Project collaboration",
+        "explanation": "The expected task is commenting within one shared folder, but the proposed connector requests access to other files, mail, and continued access outside the review. A plausible synchronization explanation and a familiar supplier identity do not establish authorization for that expanded scope. Treat this as suspected consent phishing: do not accept the connector, and verify it with the project owner and IT through known channels. The label describes the authored attack; the visible evidence establishes an unsafe, unverified permission expansion, not proof of a particular mailbox compromise.",
+        "learning_objectives": [
+          "Identify permission expansion beyond a folder-limited task.",
+          "Distinguish application consent from ordinary guest sign-in.",
+          "Escalate an unverified integration through independent contacts."
+        ],
+        "email_body": "Hello,\n\nThe Harbor review pack is ready for Thursday's discussion. The comments panel now opens in Review Companion; please connect it with your Evercrest work identity before adding your notes.\n\n[[link:Open Harbor review pack|https://workspace.alderbridge.example/Harbor/review-pack]]\n\nThe accompanying consent preview lists: read and update files you can access, read your mail, and maintain access when you are not using the application. These settings support the viewer's background synchronization, so please retain the listed selections for this review.\n\nYour existing workspace invitation remains in place. If the pack opens without the comments panel, complete the connector step and reopen it; there is no need to request the folder again.\n\nKind regards,\nNina Patel\nClient Services | Alderbridge",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "original_label": "phishing",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "draft_revision": 2,
+        "matched_pair_id": "evercrest-consent",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-phish-002",
+      "base_sha256": "841818d4141cdebabfded95b611d6ea611503f3652719f7604b81d02e629b4e0",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-phish-002",
+        "sender_name": "Elliot Ward | Crestline Assurance",
+        "sender_email": "elliot.ward@crestline-assurance.example",
+        "subject": "EG-24 supplier review: reconciliation sample",
+        "training_context": "EG-24 audit-register excerpt: partner Crestline; portal audit.crestline-assurance.example; sample fields: supplier ID, payment-term code, country. Additional fields or transfer destinations require the internal request owner to update the register before release.",
+        "is_phishing": 1,
+        "phishing_intent": "Exfiltration of supplier banking information",
+        "phishing_technique": "Audit-request impersonation and workflow diversion",
+        "target_category": "Evercrest Group / Procurement and Finance",
+        "explanation": "The request changes both the field list and transfer destination recorded in EG-24, and asks for release before the required register update. The similar partner domains and correct reference do not authorize that exception. Withhold the export and verify with the internal request owner through the established register. The authored scenario is a data-exfiltration phishing attempt; learners need not determine how the sender identity was obtained.",
+        "learning_objectives": [
+          "Compare requested fields and destination with a recorded authorization.",
+          "Identify a request to defer a required approval step.",
+          "Avoid treating project references or related domains as authorization."
+        ],
+        "email_body": "Hello,\n\nWe have prepared the EG-24 reconciliation sample. To resolve duplicate supplier entries, please include the bank-account column in this working export alongside the supplier IDs and payment terms.\n\n[[link:Open EG-24 working folder|https://files.crestline-assurance.example/EG-24/working-folder]]\n\nThe working folder accepts the original spreadsheet, whereas the audit portal applies the standard field template. We will place the reduced sample and receipt in the formal portal once reconciliation is complete.\n\nPlease upload the working copy under the existing reference so the review can continue. The register update can follow with the final sample; a separate request would split the evidence across two records.\n\nRegards,\nElliot Ward\nSupplier Assurance | Crestline",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "original_label": "phishing",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "draft_revision": 2,
+        "matched_pair_id": "evercrest-audit",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-phish-003",
+      "base_sha256": "9d15de380036fd17b2d49ff0c5640ea4d428bb228dcde79e3e234dce11e83753",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-phish-003",
+        "sender_name": "Evercrest Device Services",
+        "sender_email": "device.services@evercrest-group.example",
+        "subject": "SD-4926: replacement-phone enrollment association",
+        "training_context": "Service Desk record excerpt: SD-4926, replacement work phone requested by you; status: ready for user enrollment through the employee portal. You have not started the enrollment session. Your existing portal bookmark and employee directory remain available.",
+        "is_phishing": 1,
+        "phishing_intent": "Unauthorized sign-in approval and account access",
+        "phishing_technique": "IT impersonation and unsolicited MFA approval pretext",
+        "target_category": "Evercrest Group / Employee identity access",
+        "explanation": "A real pending replacement-phone request makes this credible, but it does not authorize a separate authentication session initiated by someone else. The email asks for approval while the learner keeps the portal closed and explains away a support-workstation identity. Decline the prompt and verify the ticket through the existing portal or directory. The visible From address and ticket reference do not prove authenticity. This is an MFA approval pretext, not necessarily repeated-prompt fatigue.",
+        "learning_objectives": [
+          "Distinguish a pending support task from a sign-in personally initiated now.",
+          "Evaluate the action and session identified by an authenticator prompt.",
+          "Verify support instructions independently before approving authentication."
+        ],
+        "email_body": "Hello,\n\nYour replacement phone is ready under SD-4926. We are using the enrollment connector to associate the device with your account before the self-service step.\n\nPlease approve the authenticator request when it arrives on your existing phone. It may identify a remote support workstation rather than your replacement handset; that is the connector session used for the initial association.\n\nYou can leave the employee portal closed during this step. Once the request has been accepted, reopen the saved ticket and continue with the remaining setup instructions.\n\nIf the prompt expires, reply with a convenient time and we can repeat the association while you have the existing phone available.\n\nThank you,\nDevice Services\nEvercrest Group",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "original_label": "phishing",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "draft_revision": 2,
+        "matched_pair_id": "evercrest-enrollment",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-legit-001",
+      "base_sha256": "1a92f1a0c261dacc3a62b737fe907ee1da53e2f4fe10c680b75d589546545ef1",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-legit-001",
+        "sender_name": "Nina Patel | Alderbridge Collaboration",
+        "sender_email": "nina.patel@alderbridge.example",
+        "subject": "Alderbridge shared a folder: Harbor review materials",
+        "training_context": "Harbor project directory excerpt: partner Alderbridge; workspace workspace.alderbridge.example; task: comment on the shared review pack using your Evercrest guest identity. The directory entry is available from your existing project bookmark.",
+        "is_phishing": 0,
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Evercrest Group / Project collaboration",
+        "explanation": "The destination shown in the link inspection matches the independently supplied project record, and the described permissions are limited to the expected folder task. The invitation uses the work identity recorded for that collaboration. This is legitimate within the supplied scenario evidence; use the existing directory entry and stop if the actual destination or permissions differ. A familiar sender, external invitation, sign-in request, or reassuring wording alone cannot establish that conclusion in a real email.",
+        "learning_objectives": [
+          "Compare guest-access permissions with the recorded collaboration task.",
+          "Match the displayed destination against an independent project record.",
+          "Avoid treating all external invitations or sign-in steps as malicious."
+        ],
+        "email_body": "Hello,\n\nThe Harbor review pack is ready for Thursday's discussion. Your invitation uses your Evercrest work identity, and the comments panel opens after you enter the shared folder.\n\n[[link:Open Harbor review pack|https://workspace.alderbridge.example/Harbor/review-pack]]\n\nThe invitation preview lists: view files and add comments in the Harbor review folder. Sign in as the invited guest if the workspace asks you to choose an account; a personal account will not resolve this folder invitation.\n\nYou can also open the workspace entry from the existing Harbor project directory and select Shared with me. If the pack is not listed there, send the folder reference to your project owner for follow-up.\n\nKind regards,\nNina Patel\nClient Services | Alderbridge",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "original_label": "benign",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "draft_revision": 2,
+        "matched_pair_id": "evercrest-consent",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-legit-002",
+      "base_sha256": "ebf0a28a8f3c4ce46c5570655d350fa5b7d312fdd6633d6b1c9a1d9bb6585715",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-legit-002",
+        "sender_name": "Elliot Ward | Crestline Assurance",
+        "sender_email": "elliot.ward@crestline-assurance.example",
+        "subject": "EG-24: supplier sample upload details",
+        "training_context": "EG-24 audit-register excerpt: partner Crestline; portal audit.crestline-assurance.example; sample fields: supplier ID, payment-term code, country. Additional fields or transfer destinations require the internal request owner to update the register before release.",
+        "is_phishing": 0,
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Evercrest Group / Procurement and Finance",
+        "explanation": "The requested three fields, destination and request reference match the independently supplied audit-register record. The email does not expand the approved release or ask for a different transfer channel. This is legitimate within the stated evidence. Open the existing register entry and use its portal route; a matching-looking domain or a correct reference alone is not enough without the scope comparison.",
+        "learning_objectives": [
+          "Verify scope, destination and reference together against a recorded request.",
+          "Recognize an authorized export without relying on reassuring language.",
+          "Keep the transfer within the recorded workflow."
+        ],
+        "email_body": "Hello,\n\nThe EG-24 upload slot is ready for the supplier sample. Please include supplier IDs, payment-term codes and country, using the export reviewed by your internal request owner.\n\n[[link:Open EG-24 upload request|https://audit.crestline-assurance.example/EG-24]]\n\nOpen the portal entry in the existing audit register and select EG-24 under Open requests. The template accepts those three fields and returns a receipt reference for the record.\n\nIf the original spreadsheet contains additional columns, export the selected fields to a separate copy before uploading. A template error can remain against this request while the internal owner resolves it; the working spreadsheet does not need to be attached to an email.\n\nRegards,\nElliot Ward\nSupplier Assurance | Crestline",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "original_label": "benign",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "draft_revision": 2,
+        "matched_pair_id": "evercrest-audit",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-legit-003",
+      "base_sha256": "a905c0391d6b23a16921f4441f9e1a3291c4cb962b7d6a6dd89a38628cb96d26",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-legit-003",
+        "sender_name": "Evercrest Device Services",
+        "sender_email": "device.services@evercrest-group.example",
+        "subject": "SD-4926: next steps for your new work phone",
+        "training_context": "Service Desk record excerpt: SD-4926, replacement work phone requested by you; status: ready for user enrollment through the employee portal. You have not started the enrollment session. Your existing portal bookmark and employee directory remain available.",
+        "is_phishing": 0,
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Evercrest Group / Employee identity access",
+        "explanation": "The email continues the independently recorded replacement request and asks the learner to start the session from the existing employee portal. Any authenticator confirmation is tied to that newly initiated sign-in, rather than a support session occurring while the portal is closed. This is legitimate within the supplied context. Verify the actual sign-in origin and action before confirming; the correct ticket number and internal-looking address alone are not sufficient.",
+        "learning_objectives": [
+          "Tie authentication confirmation to the session personally initiated.",
+          "Compare a support message with an independently available ticket.",
+          "Distinguish ordinary enrollment authentication from delegated approval."
+        ],
+        "email_body": "Hello,\n\nYour replacement phone is ready under SD-4926. When both phones are available, open your existing employee portal bookmark, select the ticket and choose Enroll replacement phone.\n\nThe first step asks you to sign in with your Evercrest work identity. Your existing authenticator may then display a request for that sign-in; complete the confirmation for the session you have just opened before continuing to device setup.\n\nAfter enrollment, the saved ticket will show the new phone awaiting its first test sign-in. Keep the existing phone until that test is complete.\n\nIf the old phone is unavailable, use the support contact recorded in the employee directory to arrange the alternative identity check for this ticket.\n\nThank you,\nDevice Services\nEvercrest Group",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "original_label": "benign",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "draft_revision": 2,
+        "matched_pair_id": "evercrest-enrollment",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-independent-phish-001",
+      "base_sha256": "a8da77f4bd8b5e869f303fe4233d4ca95025553edeef501dd0d901e51daafec8",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-independent-phish-001",
+        "sender_name": "Rowan Blake | Meridian Document Support",
+        "sender_email": "rowan.blake@meridian-docs.example",
+        "subject": "CR-306: preview diagnostics for the board-paper renderer",
+        "training_context": "Your team reported a PDF preview problem in the board-paper application. The saved CR-306 record names Meridian as the software supplier and lists diagnostic collection as the current step. Evercrest software changes are distributed through Software Center. You have not received a Software Center deployment for this incident.",
+        "is_phishing": 1,
+        "phishing_intent": "Obtain user-assisted execution of untrusted remote code",
+        "phishing_technique": "ClickFix-style diagnostic pretext",
+        "target_category": "Evercrest Group / Document application support",
+        "explanation": "The real-looking incident and relevant symptom make this plausible, but the requested action executes externally supplied code rather than merely reporting diagnostic information. The message redirects the employee away from the stated Software Center process and presents lack of administrator access as reassurance; running code as the current user can still expose that user's files and session. Treat this authored scenario as suspected phishing, do not run the helper, and verify with the internal incident owner through the existing record. The available evidence supports withholding an unverified execution request, not a claim that the visible sender address proves compromise. No executable command or script is supplied in this simulation.",
+        "learning_objectives": [
+          "Distinguish diagnostic collection from retrieval and execution of remote code.",
+          "Recognize a troubleshooting pretext that bypasses an established software-delivery process.",
+          "Understand that non-administrator execution is not proof of safety."
+        ],
+        "email_body": "Hello,\n\nWe have isolated the preview issue reported under CR-306 to the local rendering component. Before the next board-paper upload, please run the compatibility check from the support page below and add its reference to the existing incident.\n\n[[link:Open CR-306 support page|https://support.meridian-docs.example/CR-306]]\n\nThe check provides a diagnostic line to copy into your terminal. Its action preview says it retrieves a helper script from the support site and runs it in your current user session. This captures the renderer state without requiring administrator access or a separate installation package.\n\nPlease use that method for this collection rather than waiting for Software Center; the deployment package will follow once the diagnostic results are reviewed.\n\nRegards,\nRowan Blake\nMeridian Document Support",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "matched_pair_id": null,
+        "original_label": "phishing",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    },
+    {
+      "source_id": "evercrest-adv-draft-independent-legit-001",
+      "base_sha256": "73c9a07388ea4ae9275bd2a7f33cbc40ef5bfb1aabc54d4ad4325d0e4bfc62a1",
+      "review_notes": [
+        "The reviewed business evidence, objectives and pair exclusion remain unchanged. Confirm the new link labels/paths and formatting before activation."
+      ],
+      "proposed": {
+        "source_id": "evercrest-adv-draft-independent-legit-001",
+        "sender_name": "Mara Chen | Wrenfield Search",
+        "sender_email": "mara.chen@wrenfield-search.example",
+        "subject": "REC-118: interview pack for the operations shortlist",
+        "training_context": "Your saved REC-118 recruitment brief identifies Mara Chen at wrenfield-search.example as the external search contact. It records delivery of an encrypted ZIP containing three PDF interview packs, with the archive password supplied through the previously arranged phone call. The call has taken place. A separate note in the same brief assigns panel members to return scores through Evercrest's internal recruitment record.",
+        "is_phishing": 0,
+        "phishing_intent": null,
+        "phishing_technique": null,
+        "target_category": "Evercrest Group / Recruitment document handling",
+        "explanation": "The independent recruitment brief establishes the sender, delivery format, expected PDF contents, password channel and response workflow before this message arrives. The email and visible attachment preview match those details and request no additional viewer, account authorization or change of destination. This is legitimate within the supplied evidence, despite the encrypted external attachment. Encryption, a ZIP extension, a matching sender or the absence of an install request would not alone establish safety. Use the organization's normal file-handling controls and stop if the actual contents or opening behavior differ; a preview cannot guarantee that real files are harmless. The simulated archive contains no downloadable files.",
+        "learning_objectives": [
+          "Evaluate an external archive against independently established delivery expectations.",
+          "Distinguish confidentiality measures from evidence of authenticity or file safety.",
+          "Check expected contents and preserve the existing response workflow without treating every encrypted attachment as phishing."
+        ],
+        "email_body": "Hello,\n\nThe operations shortlist is ready for the panel review under REC-118. I have included the three interview packs in the encrypted archive, using the password from our scheduled call.\n\n[[attachment:REC-118_interview_packs.zip|Contents preview: Candidate-A.pdf, Candidate-B.pdf, Candidate-C.pdf]]\n\nPlease extract the PDFs and review them before the panel discussion. The archive contains the candidate packs only; scoring remains in the internal recruitment record so that each interviewer can complete an independent assessment.\n\nIf the password does not open the archive, contact me using the details already recorded in the recruitment brief and I will arrange another delivery. There is no separate viewer to install.\n\nKind regards,\nMara Chen\nWrenfield Search",
+        "difficulty_level": "advanced",
+        "review_status": "draft",
+        "matched_pair_id": null,
+        "original_label": "benign",
+        "source_dataset": null,
+        "source_origin": "Original AI-assisted PhishSense draft; not adapted from the existing source dataset.",
+        "review_notes": "Milestone 6 browser-review revision. Not approved for participant use or production import.",
+        "introduced_in_version": "rules-v3-pair-exclusion"
+      },
+      "difficulty_rationale": "Integrate task scope, authorizations and workflow timing against the independent record, despite plausible identities and business context.",
+      "participant_approval_required": true,
+      "revision": 2
+    }
+  ],
+  "revision": 2
+}

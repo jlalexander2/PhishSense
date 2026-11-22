@@ -1,3 +1,4 @@
+from item_helpers import stored_plan, open_item, submit_item, reference
 import hashlib
 import json
 from pathlib import Path
@@ -12,7 +13,7 @@ import pytest
 
 
 def seed_pairs(conn):
-    seed(conn)
+    seed(conn,hard=False)
     ids=[]
     for index in range(8):
         pair=f'synthetic-pair-{index % 3}' if index<6 else None
@@ -93,22 +94,22 @@ def test_full_pair_aware_workflow(postgres,monkeypatch,group):
     assert client.get('/inbox').status_code==200
     with client.session_transaction() as state:
         sid=state['training_session_id']
-        initial=state['training_scenario_ids']
+        initial=stored_plan(postgres,state)
     assert_cannot_skip(client,postgres,sid,initial)
     reviewed=[]
     for index in range(10):
         client.get('/inbox')
         with client.session_transaction() as state:
-            ids=state['training_scenario_ids']
+            ids=stored_plan(postgres,state)
         scenario_id=next(i for i in ids if i not in reviewed)
-        assert client.get(f'/training?scenario_id={scenario_id}').status_code==200
+        assert open_item(client,scenario_id).status_code==200
         with client.session_transaction() as state:
             token=state['active_form_token']
             state['scenario_started_at']=time.time()-10
         with postgres() as conn:
             answer=conn.execute('SELECT is_phishing FROM training_scenarios WHERE scenario_id=%s',(scenario_id,)).fetchone()['is_phishing']
         # Controls intentionally perform badly; the schedule must still apply.
-        response=client.post('/training',data=dict(scenario_id=scenario_id,
+        response=submit_item(client,dict(scenario_id=scenario_id,
             user_answer=answer if group=='experimental' else 1-answer,confidence_level=4,
             reasoning='Synthetic explanation',form_token=token))
         assert response.status_code==200
@@ -173,16 +174,16 @@ def test_server_rejects_conflicting_persisted_selection(postgres,monkeypatch):
     client=register_client(app,postgres,'invalid-selection','experimental')
     client.get('/inbox')
     with client.session_transaction() as state:
-        ids=state['training_scenario_ids']
+        ids=stored_plan(postgres,state)
         sid=state['training_session_id']
     # Model inconsistent stored metadata; a signed browser cookie cannot bypass it.
     with postgres() as conn:
         invalid=ids[:8]+[hard[0],hard[3]]
         conn.execute('UPDATE training_sessions SET scenario_ids=%s WHERE session_id=%s',(Jsonb(invalid),sid))
-    assert client.get(f'/training?scenario_id={ids[0]}').status_code==200
+    assert open_item(client,ids[0]).status_code==200
     with client.session_transaction() as state:
         token=state['active_form_token']
-    response=client.post('/training',data=dict(scenario_id=ids[0],user_answer=1,
+    response=submit_item(client,dict(scenario_id=ids[0],user_answer=1,
         confidence_level=4,reasoning='Synthetic',form_token=token))
     assert response.status_code==409
     with postgres() as conn:

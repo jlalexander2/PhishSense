@@ -1,3 +1,4 @@
+from item_helpers import stored_plan, open_item, submit_item, reference
 from datetime import datetime, timedelta, timezone
 import secrets
 
@@ -162,12 +163,12 @@ def test_tenth_response_completes_before_inbox_and_allows_next_session(postgres,
     reviewed=set()
     for index in range(10):
         with client.session_transaction() as state:
-            scenario=next(i for i in state['training_scenario_ids'] if i not in reviewed)
-        assert client.get('/training?scenario_id='+str(scenario)).status_code==200
+            scenario=next(i for i in stored_plan(postgres,state) if i not in reviewed)
+        assert open_item(client,scenario).status_code==200
         with client.session_transaction() as state:token=state['active_form_token']
         with postgres() as c:
             answer_value=c.execute('SELECT is_phishing FROM training_scenarios WHERE scenario_id=%s',(scenario,)).fetchone()['is_phishing']
-        feedback=client.post('/training',data=dict(scenario_id=scenario,user_answer=answer_value,
+        feedback=submit_item(client,dict(scenario_id=scenario,user_answer=answer_value,
             confidence_level=5,reasoning='Synthetic milestone five response',form_token=token))
         assert feedback.status_code==200
         reviewed.add(scenario)
@@ -185,7 +186,7 @@ def test_tenth_response_completes_before_inbox_and_allows_next_session(postgres,
     assert client.post('/training/start',data={'form_token':start_token}).status_code==302
     with client.session_transaction() as state:
         assert state['training_session_id']!=sid
-        assert len(state['training_scenario_ids'])==10
+        assert len(stored_plan(postgres,state))==10
     with postgres() as c:
         assert c.execute('SELECT * FROM training_sessions WHERE session_id=%s',(sid,)).fetchone()==old_session
         assert c.execute('SELECT * FROM training_responses WHERE session_id=%s ORDER BY response_id',(sid,)).fetchall()==old_responses

@@ -1,3 +1,4 @@
+from item_helpers import stored_plan, open_item, submit_item, reference
 import secrets
 import importlib
 import os
@@ -11,6 +12,14 @@ import pytest
 
 import database
 from validation_support import require_test_target
+
+
+def account_form(client, path, data=None):
+    """Exercise the real account form/token exchange, never disable CSRF in tests."""
+    assert client.get(path).status_code == 200
+    with client.session_transaction() as state:
+        token = state['auth_form_token']
+    return client.post(path, data={**(data or {}), 'auth_form_token': token})
 
 
 def test_missing_database_url(monkeypatch):
@@ -40,19 +49,22 @@ def postgres(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", url)
     original = database.get_db_connection
     namespace = "phishsense_test_" + uuid.uuid4().hex
-    with original() as admin:
-        admin.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(namespace)))
     def connect():
         conn = original()
         conn.execute(sql.SQL("SET search_path TO {}").format(sql.Identifier(namespace)))
         return conn
-    try:
-        with connect() as conn:
-            conn.execute(Path("schema.sql").read_text())
-        yield connect
-    finally:
-        with original() as admin:
+    # Keep the verified fixture owner connection for its own cleanup; do not
+    # depend on a fresh pooler handshake after the test. No retry or fallback.
+    with original() as admin:
+        admin.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(namespace)))
+        admin.commit()
+        try:
+            with connect() as conn:
+                conn.execute(Path("schema.sql").read_text())
+            yield connect
+        finally:
             admin.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(namespace)))
+            admin.commit()
 
 
 def test_workflow(postgres, monkeypatch):
@@ -62,12 +74,12 @@ def test_workflow(postgres, monkeypatch):
     application.app.config.update(TESTING=True)
     client = application.app.test_client()
     assert client.get("/inbox").status_code == 302
-    assert client.post("/register", data={}).status_code == 400
+    assert account_form(client, "/register", {}).status_code == 400
     account = dict(username="learner", email="learner@example.invalid", password=secrets.token_urlsafe(24))
-    assert b"Successful" in client.post("/register", data=account).data
-    assert b"Failed" in client.post("/register", data=account).data
-    assert b"Failed" in client.post("/login", data={**account, "password": "wrong"}).data
-    assert client.post("/login", data=account).status_code == 302
+    assert b"Successful" in account_form(client, "/register", account).data
+    assert b"Failed" in account_form(client, "/register", account).data
+    assert b"Failed" in account_form(client, "/login", {**account, "password": "wrong"}).data
+    assert account_form(client, "/login", account).status_code == 302
     assert b"learner" in client.get("/dashboard").data
     assert b"No training emails" in client.get("/inbox").data
     import import_scenarios
@@ -84,24 +96,24 @@ def test_workflow(postgres, monkeypatch):
         assert user["password_hash"] != account["password"]
     assert b"Evercrest Group" in client.get("/inbox").data
     with client.session_transaction() as state:
-        ids = state["training_scenario_ids"]
+        ids = stored_plan(postgres,state)
         session_id = state["training_session_id"]
     assert len(ids) == 10
-    assert client.get("/training?scenario_id=999999").status_code == 302
+    assert open_item(client,999999).status_code == 302
     for index, scenario_id in enumerate(ids):
-        assert client.get(f"/training?scenario_id={scenario_id}").status_code == 200
+        assert open_item(client,scenario_id).status_code == 200
         with client.session_transaction() as state:
             token = state["active_form_token"]
         with postgres() as conn:
             answer = conn.execute("SELECT is_phishing FROM training_scenarios WHERE scenario_id=%s", (scenario_id,)).fetchone()["is_phishing"]
         payload = dict(scenario_id=scenario_id, user_answer=answer, reasoning="Synthetic reasoning", confidence_level=4, form_token=token)
         for invalid in ({"confidence_level": 6}, {"reasoning": ""}, {"form_token": "wrong"}, {"user_answer": 7}):
-            assert client.post("/training", data={**payload, **invalid}).status_code == 400
-        feedback = client.post("/training", data=payload)
+            assert submit_item(client,{**payload, **invalid}).status_code == 400
+        feedback = submit_item(client,payload)
         assert b"Correct Answer!" in feedback.data
         assert b"Synthetic explanation" in feedback.data
         assert b"Synthetic reasoning" in feedback.data
-        assert client.post("/training", data=payload).status_code == 400
+        assert submit_item(client,payload).status_code == 400
         inbox = client.get("/inbox")
         assert f"{index + 1} of 10 Emails Reviewed".encode() in inbox.data
     assert b"Training Complete!" in inbox.data
@@ -110,7 +122,7 @@ def test_workflow(postgres, monkeypatch):
         assert len(responses) == 10
         assert all(r["confidence_level"] == 4 and r["is_correct"] == 1 and r["response_time"] >= 0 for r in responses)
         assert conn.execute("SELECT completed_at FROM training_sessions WHERE session_id=%s", (session_id,)).fetchone()["completed_at"] is not None
-    client.get("/logout")
+    account_form(client, "/logout")
     assert client.get("/inbox").status_code == 302
 
 

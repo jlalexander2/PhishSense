@@ -5,7 +5,9 @@ from psycopg.types.json import Jsonb
 
 LEGACY_VERSION = 'rules-v1'
 ORDERED_VERSION = 'rules-v2-ordered-control'
-VERSION = 'rules-v3-pair-exclusion'
+PAIR_VERSION = 'rules-v3-pair-exclusion'
+VERSION = 'rules-v4-balanced-selection'
+PAIR_VERSIONS = (PAIR_VERSION, VERSION)
 CONTROL_SCHEDULE = ('intermediate',) * 5 + (
     'beginner', 'advanced', 'intermediate', 'beginner', 'advanced')
 LEVELS = ('beginner', 'intermediate', 'advanced')
@@ -45,7 +47,7 @@ def choose_schedule(candidates, schedule, blocked_pairs=()):
 
 
 def control_scenarios(conn):
-    """Predetermined IDs; never query learner history or performance."""
+    """Historical v2/v3 inventory helper; v4 uses balanced_session_scenarios."""
     pools = {level: conn.execute(
         "SELECT scenario_id, matched_pair_id FROM training_scenarios WHERE difficulty_level=%s ORDER BY scenario_id",
         (level,)).fetchall() for level in LEVELS}
@@ -55,6 +57,112 @@ def control_scenarios(conn):
     return selected
 
 
+
+def balanced_candidates(conn, user_id=None):
+    """Controls use only inventory/ID order; adaptive novelty is a soft preference."""
+    if user_id is None:
+        rows = conn.execute("SELECT scenario_id, matched_pair_id, is_phishing, difficulty_level "
+                            "FROM training_scenarios ORDER BY scenario_id").fetchall()
+    else:
+        rows = conn.execute("""
+            SELECT s.scenario_id, s.matched_pair_id, s.is_phishing, s.difficulty_level
+            FROM training_scenarios s LEFT JOIN (
+                SELECT r.scenario_id, MAX(r.answered_at) AS last_completed
+                FROM training_responses r JOIN training_sessions ts ON ts.session_id=r.session_id
+                WHERE ts.user_id=%s GROUP BY r.scenario_id
+            ) history ON history.scenario_id=s.scenario_id
+            ORDER BY history.last_completed ASC NULLS FIRST, RANDOM()
+        """, (user_id,)).fetchall()
+    return {level: [r for r in rows if r['difficulty_level'] == level] for level in LEVELS}
+
+
+def choose_balanced_schedule(candidates, schedule, prefix=(), require_branches=False):
+    """Research-only quotas: 2/3 baseline, 3/2 remainder, ten distinct pair-safe IDs.
+
+    Prefix is immutable already-presented rows, not learner answer labels.
+    Memoized search preserves candidate preference among feasible complete plans.
+    """
+    from functools import lru_cache
+    schedule = tuple(schedule)
+    prefix = tuple(prefix)
+    if len(schedule) != 10 or len(prefix) > 10:
+        return None
+    initial_ids = tuple(r['scenario_id'] for r in prefix)
+    initial_pairs = [r['matched_pair_id'] for r in prefix if r['matched_pair_id']]
+    if (len(set(initial_ids)) != len(initial_ids) or len(set(initial_pairs)) != len(initial_pairs)
+            or any(r['difficulty_level'] != schedule[i] for i,r in enumerate(prefix))):
+        return None
+
+    @lru_cache(None)
+    def search(position, used_ids, used_pairs, phishing, baseline_count):
+        if phishing > 5 or phishing + 10-position < 5:
+            return None
+        if position <= 5 and (baseline_count > 2 or baseline_count + 5-position < 2):
+            return None
+        if position == 10:
+            return () if phishing == 5 and baseline_count == 2 else None
+        available = []
+        for level in set(schedule[position:]):
+            pool = [r for r in candidates[level] if r['scenario_id'] not in used_ids
+                    and (not r['matched_pair_id'] or r['matched_pair_id'] not in used_pairs)]
+            if len({('pair',r['matched_pair_id']) if r['matched_pair_id'] else ('id',r['scenario_id'])
+                    for r in pool}) < schedule[position:].count(level):
+                return None
+            available.extend(pool)
+        if (sum(r['is_phishing'] for r in available) < 5-phishing or
+                sum(1-r['is_phishing'] for r in available) < 5-(position-phishing)):
+            return None
+        for row in candidates[schedule[position]]:
+            sid, pair = row['scenario_id'], row['matched_pair_id']
+            if sid in used_ids or (pair and pair in used_pairs):
+                continue
+            tail = search(position+1, used_ids | {sid}, used_pairs | ({pair} if pair else set()),
+                          phishing+row['is_phishing'], baseline_count+(row['is_phishing'] if position<5 else 0))
+            if tail is not None:
+                return (sid,) + tail
+        return None
+
+    # Select a feasible baseline before reserving the rest of an experimental plan.
+    # With current pools only advanced rows are paired, but check generically.
+    if require_branches:
+        from itertools import combinations
+        for baseline in combinations(candidates['intermediate'], 5):
+            if sum(r['is_phishing'] for r in baseline) != 2:
+                continue
+            if all(choose_balanced_schedule(candidates, ('intermediate',)*5+(level,)*5,
+                                           baseline) is not None for level in LEVELS):
+                plan = choose_balanced_schedule(candidates, schedule, baseline)
+                if plan is not None:
+                    return plan
+        return None
+    tail = search(len(prefix), frozenset(initial_ids), frozenset(initial_pairs),
+                  sum(r['is_phishing'] for r in prefix),
+                  sum(r['is_phishing'] for r in prefix[:5]))
+    return list(initial_ids+tail) if tail is not None else None
+
+
+def balanced_session_scenarios(conn, user_id, group):
+    pools = balanced_candidates(conn, None if group == 'control' else user_id)
+    if not any(pools.values()):
+        return []
+    schedule = CONTROL_SCHEDULE if group == 'control' else ('intermediate',)*10
+    plan = choose_balanced_schedule(pools, schedule, require_branches=group == 'experimental')
+    if plan is None:
+        raise ControlScheduleUnavailable()
+    return plan
+
+
+def balanced_plan_safe(conn, ids):
+    if len(ids) != 10 or not pair_safe(conn, ids):
+        return False
+    rows = {r['scenario_id']:r for r in conn.execute(
+        'SELECT scenario_id,is_phishing,difficulty_level FROM training_scenarios WHERE scenario_id=ANY(%s::integer[])',
+        (list(ids),))}
+    return (len(rows) == 10 and sum(rows[i]['is_phishing'] for i in ids) == 5
+            and sum(rows[i]['is_phishing'] for i in ids[:5]) == 2
+            and all(rows[i]['difficulty_level'] == 'intermediate' for i in ids[:5]))
+
+
 def next_scenario(training_session, reviewed):
     ids = training_session['scenario_ids'] or []
     return next((sid for sid in ids if sid not in reviewed), None)
@@ -62,7 +170,7 @@ def next_scenario(training_session, reviewed):
 
 def sequence_enforced(training_session):
     # New protocol only: never reinterpret historic v1 sessions.
-    return training_session['algorithm_version'] in (ORDERED_VERSION, VERSION)
+    return training_session['algorithm_version'] in (ORDERED_VERSION, PAIR_VERSION, VERSION)
 
 
 def evaluate_difficulty(current, responses, group):
@@ -140,12 +248,12 @@ def pair_safe(conn, ids):
 
 def evaluate_session(conn, training_session):
     """Called under a session row lock, in the same transaction as the response."""
-    if training_session['algorithm_version'] not in (LEGACY_VERSION, ORDERED_VERSION, VERSION):
+    if training_session['algorithm_version'] not in (LEGACY_VERSION, ORDERED_VERSION, PAIR_VERSION, VERSION):
         return None  # Historical sessions are never retroactively adapted.
     sid = training_session['session_id']
     rows = conn.execute('''SELECT * FROM training_responses
         WHERE session_id = %s ORDER BY response_id''', (sid,)).fetchall()
-    fixed_control = (training_session['algorithm_version'] in (ORDERED_VERSION, VERSION)
+    fixed_control = (training_session['algorithm_version'] in (ORDERED_VERSION, PAIR_VERSION, VERSION)
                      and training_session['study_group'] == 'control')
     scheduled_level = training_session['current_difficulty']
     if fixed_control:
@@ -177,9 +285,19 @@ def evaluate_session(conn, training_session):
     if proposed != current and not fixed_control:
         # Check availability even at session completion; never claim promotion to
         # a difficulty that has no approved scenarios.
-        available = select_scenarios(conn, training_session['user_id'], proposed,
-                                     max(remaining, 1), reviewed,
-                                     pair_exclusion=training_session['algorithm_version'] == VERSION)
+        if training_session['algorithm_version'] == VERSION and remaining:
+            pools = balanced_candidates(conn, training_session['user_id'])
+            lookup = {r['scenario_id']:r for pool in pools.values() for r in pool}
+            prefix = [lookup[i] for i in completed]
+            plan = choose_balanced_schedule(pools,
+                tuple(r['difficulty_at_response'] for r in rows) + (proposed,)*remaining, prefix)
+            available = plan[len(completed):] if plan is not None else []
+        else:
+            # At response ten there is no remaining classification quota. Preserve
+            # the prior evaluator's one-item difficulty availability semantics.
+            available = select_scenarios(conn, training_session['user_id'], proposed,
+                                         max(remaining, 1), reviewed,
+                                         pair_exclusion=training_session['algorithm_version'] in PAIR_VERSIONS)
         if len(available) < max(remaining, 1):
             applied = current
             reason = 'target_scenarios_unavailable'

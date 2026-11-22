@@ -111,6 +111,21 @@
             min-height: 150px;
         }
 
+        .email-context { padding: 18px 24px; background: #edf3f8; border-left: 3px solid #657c91; margin-bottom: 20px; line-height: 1.7; }
+        .email-context h3 { margin: 0 0 8px; font-size: 15px; }
+        .email-context p { margin: 0; white-space: pre-wrap; }
+        .inspection-help { color: #52637b; font-size: 13px; line-height: 1.6; }
+        .email-link-inspection { display: inline-block; vertical-align: baseline; white-space: normal; max-width: 100%; }
+        .email-link { color: #174ea6; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; overflow-wrap: anywhere; }
+        .email-link::-webkit-details-marker { display: none; }
+        .email-link:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+        .email-permissions { padding: 12px; margin: 6px 0; border: 1px solid #c9d5e3; background: #f8fafc; font-size: 13px; line-height: 1.6; }
+        .email-permissions p { margin: 8px 0 4px; }
+        .email-permissions ul { margin: 4px 0; padding-left: 20px; }
+        .email-link-destination { display: block; padding: 10px 12px; margin: 6px 0; background: #edf3f8; border: 1px solid #c9d5e3; border-radius: 6px; font-size: 13px; overflow-wrap: anywhere; }
+        .email-attachment { display: block; width: fit-content; max-width: 100%; padding: 12px 16px; margin: 12px 0; border: 1px solid #c9d5e3; border-radius: 8px; background: #f8fafc; line-height: 1.6; white-space: normal; }
+        .attachment-preview { display: block; color: #52637b; font-size: 13px; }
+
         .answer-card {
             background: white;
             border-radius: 12px;
@@ -242,7 +257,19 @@
 
             .email-header,
             .email-body,
-            .answer-card {
+            .email-context { padding: 18px 24px; background: #edf3f8; border-left: 3px solid #657c91; margin-bottom: 20px; line-height: 1.7; }
+        .email-context h3 { margin: 0 0 8px; font-size: 15px; }
+        .email-context p { margin: 0; white-space: pre-wrap; }
+        .inspection-help { color: #52637b; font-size: 13px; line-height: 1.6; }
+        .email-link-inspection { display: inline-block; vertical-align: baseline; white-space: normal; max-width: 100%; }
+        .email-link { color: #174ea6; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; list-style: none; overflow-wrap: anywhere; }
+        .email-link::-webkit-details-marker { display: none; }
+        .email-link:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+        .email-link-destination { display: block; padding: 10px 12px; margin: 6px 0; background: #edf3f8; border: 1px solid #c9d5e3; border-radius: 6px; font-size: 13px; overflow-wrap: anywhere; }
+        .email-attachment { display: block; width: fit-content; max-width: 100%; padding: 12px 16px; margin: 12px 0; border: 1px solid #c9d5e3; border-radius: 8px; background: #f8fafc; line-height: 1.6; white-space: normal; }
+        .attachment-preview { display: block; color: #52637b; font-size: 13px; }
+
+        .answer-card {
                 padding: 22px;
             }
 
@@ -280,7 +307,10 @@
         </p>
 
         {% if scenario %}
-
+            {% set email_view = present_email(scenario) %}
+            {% from "email_content.html" import content %}
+            <p class="inspection-help">Inspect a link's destination by hovering or selecting its text (Enter on a keyboard). Link inspection includes the destination and any available application request details. Links do not navigate; attachment cards do not open or download files.</p>
+            {% if email_view.context %}<aside class="email-context"><h3>Workplace context</h3><p>{{ email_view.context }}</p></aside>{% endif %}
             <div class="email-card">
 
                 <div class="email-header">
@@ -295,6 +325,8 @@
                         &lt;{{ scenario["sender_email"] }}&gt;
                     </div>
 
+                    {% if email_view.reply_to %}<div class="email-detail"><strong>Reply-To:</strong> {{ email_view.reply_to }}</div>{% endif %}
+
                     <div class="email-detail">
                         <strong>To:</strong>
                         You
@@ -307,7 +339,7 @@
 
                 </div>
 
-                <div class="email-body">{{ scenario["email_body"] }}</div>
+                <div class="email-body">{{ content(email_view) }}</div>
 
             </div>
 
@@ -325,8 +357,8 @@
 
                 <input
                     type="hidden"
-                    name="scenario_id"
-                    value="{{ scenario['scenario_id'] }}"
+                    name="item_ref"
+                    value="{{ item_ref }}"
                 >
 
                 <h3>How would you classify this email?</h3>

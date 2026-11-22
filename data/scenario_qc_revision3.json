@@ -1,0 +1,883 @@
+{
+  "revision": 3,
+  "status": "review_only_not_empirically_calibrated",
+  "source_file": "data/scenario_realism_drafts.json",
+  "composition": {
+    "beginner": {
+      "phishing": 4,
+      "legitimate": 3
+    },
+    "intermediate": {
+      "phishing": 5,
+      "legitimate": 7
+    },
+    "advanced": {
+      "phishing": 4,
+      "legitimate": 4
+    }
+  },
+  "capacity": {
+    "intermediate_count": 12,
+    "baseline_required": 10,
+    "pair_safe_hard_capacity": 5,
+    "hard_required": 5
+  },
+  "approval_required_before_participant_use": [
+    "All revised stimuli and immutable content version",
+    "Mechanisms/evidence: phish-0052 and phish-0075",
+    "Pair-level permission and context changes",
+    "Any difficulty-label reassignment after replacement capacity and pilot review"
+  ],
+  "participant_controls": {
+    "opaque_references": true,
+    "server_side_plan": true,
+    "reply_to": "fictional plaintext, no mailto",
+    "link_preview": "destination and optional application permissions, no navigation or consent",
+    "reviewer_metadata": "not stored in participant presentation JSON"
+  },
+  "items": [
+    {
+      "source_id": "phish-0001",
+      "difficulty_label": "beginner",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "7da8a90a6342fb739eb56920078a7d78c090a11df17a165fc0a6acfcabbe8b16",
+      "intended_mechanism": "Bank-service impersonation and credential pretext",
+      "intended_clues": [
+        "Compare the apparent account-review host with the independently recorded bank host."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use",
+        "Mechanism terminology corrected to match current visible evidence"
+      ],
+      "source_provenance": {
+        "base_sha256": "7da8a90a6342fb739eb56920078a7d78c090a11df17a165fc0a6acfcabbe8b16",
+        "original_source_id": "phish-0001",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Link Spoofing with Urgency"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy provisionally; remove repeated lockout pressure and filler references. Context: customer/service record, not an instruction to distrust the email.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0052",
+      "difficulty_label": "intermediate",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "9f5c3cce96d2a19acd204e5a20cf1cc0e43c00223ce6c0ec132a40287be8a35f",
+      "intended_mechanism": "Invoice-thread impersonation and beneficiary diversion",
+      "intended_clues": [
+        "Changed beneficiary plus inconsistent reply destination relative to a saved supplier record. A PDF is not itself evidence."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Proposed intermediate: combine beneficiary-record comparison with Reply-To and quoted-thread assessment. New conversation-impersonation evidence and mechanism require explicit reapproval.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use",
+        "Mechanism and intent metadata change",
+        "New thread/Reply-To or credential evidence"
+      ],
+      "source_provenance": {
+        "base_sha256": "9f5c3cce96d2a19acd204e5a20cf1cc0e43c00223ce6c0ec132a40287be8a35f",
+        "original_source_id": "phish-0052",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Suspicious Attachment"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Priority reapproval: introduce a defensible thread/reply discrepancy; replace the exact pre-payment rule in context with factual supplier details. Reconcile stale Suspicious Attachment metadata.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0009",
+      "difficulty_label": "intermediate",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "197e60d74e6f454f9db682a0e0f8c2b2ae0d4ec58b3393c5079319eb9963594b",
+      "intended_mechanism": "Executive identity impersonation",
+      "intended_clues": [
+        "Display-name authority conflicts with independently recorded sender identity or reply path."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy/intermediate boundary: identity/destination mismatch may be recognized with one comparison. Retain the current label pending pilot and intermediate-pool replacement review.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use",
+        "Mechanism terminology corrected to match current visible evidence"
+      ],
+      "source_provenance": {
+        "base_sha256": "197e60d74e6f454f9db682a0e0f8c2b2ae0d4ec58b3393c5079319eb9963594b",
+        "original_source_id": "phish-0009",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Business Email Compromise"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Easy/intermediate boundary: the current external From-domain mismatch is a single conspicuous clue. Do not retain intermediate solely because the amount is large.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0057",
+      "difficulty_label": "beginner",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "9b60f9523a48ae114ec6079df385518535ef6dfcf76aa20d21f85138ffce08dd",
+      "intended_mechanism": "Lookalike Domain",
+      "intended_clues": [
+        "Unsolicited claim destination differs from the retailer record; personal/account information request is out of context."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "9b60f9523a48ae114ec6079df385518535ef6dfcf76aa20d21f85138ffce08dd",
+        "original_source_id": "phish-0057",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Lookalike Domain"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy provisionally; make the offer a plausible employee promotion, not an exaggerated prize deadline. Remove padding. Review any new HR-benefit framing.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0055",
+      "difficulty_label": "beginner",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "d79e1ebe58cb4a4e7dace211fd97c22cdd7e6dfd7ea529868beee15b318dcdff",
+      "intended_mechanism": "Executable Attachment",
+      "intended_clues": [
+        "The attachment is an application offered as a delivery form."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "d79e1ebe58cb4a4e7dace211fd97c22cdd7e6dfd7ea529868beee15b318dcdff",
+        "original_source_id": "phish-0055",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Executable Attachment"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy; use a short automated shipment notice. Keep the full extension visible; do not hide it or rely on the sender merely being external.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0002",
+      "difficulty_label": "beginner",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "811cb3ece693b86189eb0c9612b39ca777c32fe56e62fb51c121862dba6f39ec",
+      "intended_mechanism": "Executable Attachment",
+      "intended_clues": [
+        "An executable file is represented as an invoice."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "811cb3ece693b86189eb0c9612b39ca777c32fe56e62fb51c121862dba6f39ec",
+        "original_source_id": "phish-0002",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Executable Attachment"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy provisionally; redundant with phish-0055. A substantive mechanism replacement would require explicit provenance, evidence and difficulty reapproval.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0003",
+      "difficulty_label": "intermediate",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "2f851e3114d6bf21b88df29f5115d1a6f233950cfad254f21e2840e4c19b426a",
+      "intended_mechanism": "Homoglyph Link Spoofing",
+      "intended_clues": [
+        "Inspect the actual hostname against the service directory; geography and alarm wording are not reliable evidence."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy/intermediate boundary: identity/destination mismatch may be recognized with one comparison. Retain the current label pending pilot and intermediate-pool replacement review.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "2f851e3114d6bf21b88df29f5115d1a6f233950cfad254f21e2840e4c19b426a",
+        "original_source_id": "phish-0003",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Homoglyph Link Spoofing"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Easy/intermediate boundary: current zero substitution is obvious. Remove location stereotyping and urgency; do not silently relabel without preserving baseline capacity.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0075",
+      "difficulty_label": "intermediate",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "a4263f28cf76601ab0114433a553d16825419321c928f595e63cae2153bd5e0c",
+      "intended_mechanism": "Supplier impersonation and work-credential harvesting",
+      "intended_clues": [
+        "Requested work credentials and actual destination conflict with the supplier/identity-provider records."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Proposed intermediate: compare the supplier and identity records with the actual credential destination. Context no longer supplies a password-prohibition rule. Reapprove the new credential-harvesting mechanism.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use",
+        "Mechanism and intent metadata change",
+        "New thread/Reply-To or credential evidence"
+      ],
+      "source_provenance": {
+        "base_sha256": "a4263f28cf76601ab0114433a553d16825419321c928f595e63cae2153bd5e0c",
+        "original_source_id": "phish-0075",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Suspicious Attachment"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Priority reapproval: remove the context sentence banning exactly this action. Keep independent factual destinations accessible. Update/reapprove legacy attachment-centric metadata.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "phish-0059",
+      "difficulty_label": "intermediate",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "b99310aa4a9847c9d37114d4ecaa965c0582758a7f8d99fdb163d602eeadc60c",
+      "intended_mechanism": "Executive impersonation and approval substitution",
+      "intended_clues": [
+        "A purported executive substitutes email instructions for a recorded pending supplier/payment action."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Proposed intermediate: reconcile an apparently internal request with the recorded transaction status. The record gives facts, not a prewritten finance rule. Reapprove the changed evidence.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "b99310aa4a9847c9d37114d4ecaa965c0582758a7f8d99fdb163d602eeadc60c",
+        "original_source_id": "phish-0059",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": "Business Email Compromise"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Priority reapproval: contextual rule currently gives the answer away. Use transaction/authorization records and, if needed, a common reference handbook available for both classes.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-001",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "bc5b9b86cf07c19a53899a441d238e3cd155a82d4452a179b9259e70d6109c37",
+      "intended_mechanism": "Routine vendor billing / legitimate financial action",
+      "intended_clues": [
+        "Invoice reference, subscription change, destination and purchase record reconcile."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Intermediate candidate: assess more than one recorded business fact or workflow detail. Pilot accuracy/time/confidence before claiming empirical difficulty equivalence.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "bc5b9b86cf07c19a53899a441d238e3cd155a82d4452a179b9259e70d6109c37",
+        "original_source_id": "legit-001",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Intermediate only if multiple independent facts need comparison. Remove habitual safety-coaching prose; a real financial deadline and cost-centre request can remain legitimate.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-002",
+      "difficulty_label": "beginner",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "4f447744df685ff05a85bca7c4a9aaaa626e9f1b6daa61872183673465483e8b",
+      "intended_mechanism": "Routine internal scheduling",
+      "intended_clues": [
+        "Meeting time and participants match the calendar record."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "4f447744df685ff05a85bca7c4a9aaaa626e9f1b6daa61872183673465483e8b",
+        "original_source_id": "legit-002",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy; shorten naturally into an internal discussion, rather than padding every easy message to a target length.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-003",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "470cf9051dcb82baf76e78bfe21e046738e6eb3a82fbc963094560dcde186f44",
+      "intended_mechanism": "Legitimate supplier/order coordination",
+      "intended_clues": [
+        "Order, fulfillment details and business portal match purchasing records."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Intermediate candidate: assess more than one recorded business fact or workflow detail. Pilot accuracy/time/confidence before claiming empirical difficulty equivalence.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "470cf9051dcb82baf76e78bfe21e046738e6eb3a82fbc963094560dcde186f44",
+        "original_source_id": "legit-003",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Easy/intermediate boundary: current confirmation is routine. Retain intermediate only with a genuine verification task, not more words.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-004",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "3db275688f43ee34627e9a87ae4ad67541a739f599774fe717529e840c35740a",
+      "intended_mechanism": "Legitimate account notification",
+      "intended_clues": [
+        "Reported account event and independent account activity/service identity reconcile."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Lower-demand intermediate candidate: retained label is provisional. Straightforward factual notification may belong at easy after pilot/replacement planning; no relabeling performed.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "3db275688f43ee34627e9a87ae4ad67541a739f599774fe717529e840c35740a",
+        "original_source_id": "legit-004",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Likely easy candidate as written; straightforward notification without a complex decision. Any enrichment/relabel requires review.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-005",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "b159e21ae12c18bb943fe36bc32a30cd11643deb0cded7e6b61a5d0336d2bc1b",
+      "intended_mechanism": "Legitimate renewal/billing notice",
+      "intended_clues": [
+        "Subscription and billing period match the recorded service arrangement."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Lower-demand intermediate candidate: retained label is provisional. Straightforward factual notification may belong at easy after pilot/replacement planning; no relabeling performed.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "b159e21ae12c18bb943fe36bc32a30cd11643deb0cded7e6b61a5d0336d2bc1b",
+        "original_source_id": "legit-005",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Likely easy candidate as written. Do not complicate it artificially to fill an intermediate quota; review replacement/enrichment alongside inventory constraints.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-006",
+      "difficulty_label": "beginner",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "63aa7aec7f8e110b4739e73d7ca35e39db7b0111feeb6f7742c2c2e9f7318470",
+      "intended_mechanism": "Legitimate newsletter/digest",
+      "intended_clues": [
+        "Subscription/vendor context and ordinary newsletter content agree."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "63aa7aec7f8e110b4739e73d7ca35e39db7b0111feeb6f7742c2c2e9f7318470",
+        "original_source_id": "legit-006",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy; use a digest with short business items rather than an unusually long welcome message. Ordinary fictional links are acceptable.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-007",
+      "difficulty_label": "beginner",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "7636881c991c9869213a1478076ec2a71fc1b47182372afc8b6ba8c2d4b3f496",
+      "intended_mechanism": "Legitimate travel/attachment notice",
+      "intended_clues": [
+        "Booking reference, route and expected itinerary agree with travel records."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Easy candidate: a recognizable file/action/identity issue or straightforward expected event can be checked against the neutral record. Difficulty is not assigned from message length.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "7636881c991c9869213a1478076ec2a71fc1b47182372afc8b6ba8c2d4b3f496",
+        "original_source_id": "legit-007",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Retain easy; use an automatic itinerary format. A normal correction deadline and PDF should not imply phishing.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-008",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "0cb5c8eda5e2eb4da4bab084c3058d4fa96bd5d75c7415335069dd53d5637a71",
+      "intended_mechanism": "Legitimate IT maintenance",
+      "intended_clues": [
+        "Window and service impact match the change calendar."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Lower-demand intermediate candidate: retained label is provisional. Straightforward factual notification may belong at easy after pilot/replacement planning; no relabeling performed.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "0cb5c8eda5e2eb4da4bab084c3058d4fa96bd5d75c7415335069dd53d5637a71",
+        "original_source_id": "legit-008",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Likely easy candidate as written. Align the fictional timeline; the old May date must not become a real-calendar authenticity cue.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-009",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "f602629b7c6f85aac54b78a10042a52a5368075d1f0ae695258b08588b193640",
+      "intended_mechanism": "Legitimate financial statement",
+      "intended_clues": [
+        "Statement period/account reference match the bank record; ordinary account access stays within the expected service."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Lower-demand intermediate candidate: retained label is provisional. Straightforward factual notification may belong at easy after pilot/replacement planning; no relabeling performed.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "f602629b7c6f85aac54b78a10042a52a5368075d1f0ae695258b08588b193640",
+        "original_source_id": "legit-009",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Likely easy candidate as written. Review the payroll-account adaptation and avoid teaching no-link equals legitimate.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "legit-010",
+      "difficulty_label": "intermediate",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "b65829285483aa4dd6f4e9b3abeae9d8dab466f9e0350c4ea72c215d90b1b857",
+      "intended_mechanism": "Legitimate collaborative document action",
+      "intended_clues": [
+        "Project task, folder and permissions match the team record."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Intermediate candidate: assess more than one recorded business fact or workflow detail. Pilot accuracy/time/confidence before claiming empirical difficulty equivalence.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "b65829285483aa4dd6f4e9b3abeae9d8dab466f9e0350c4ea72c215d90b1b857",
+        "original_source_id": "legit-010",
+        "original_source_dataset": "Teddyha/phishing_benign_email_dataset",
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Intermediate candidate if learners inspect both task and access scope. Keep the deadline; remove excessive reassurance and safety instructions from the sender.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-phish-001",
+      "difficulty_label": "advanced",
+      "classification": 1,
+      "matched_pair_id": "evercrest-consent",
+      "base_sha256": "bf4cae76dc3f3d2e7874b4dd54bbafc271e60abd0ad0383b35370cf5ec567435",
+      "intended_mechanism": "Consent phishing with excessive delegated permissions",
+      "intended_clues": [
+        "Inspection shows broad files/mail/persistent access for a folder-comment task."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "bf4cae76dc3f3d2e7874b4dd54bbafc271e60abd0ad0383b35370cf5ec567435",
+        "original_source_id": "evercrest-adv-draft-phish-001",
+        "original_source_dataset": null,
+        "original_phishing_technique": "Consent phishing with excessive delegated permissions"
+      },
+      "pair_review": "evercrest-consent",
+      "prior_audit_finding": "Advanced candidate: move scope evidence into an inert inspection preview instead of having the email confess/justify every permission. Review jointly with consent counterpart.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-phish-002",
+      "difficulty_label": "advanced",
+      "classification": 1,
+      "matched_pair_id": "evercrest-audit",
+      "base_sha256": "841818d4141cdebabfded95b611d6ea611503f3652719f7604b81d02e629b4e0",
+      "intended_mechanism": "Audit-request impersonation and workflow diversion",
+      "intended_clues": [
+        "Requested fields, transfer destination and approval state diverge from the audit record."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "841818d4141cdebabfded95b611d6ea611503f3652719f7604b81d02e629b4e0",
+        "original_source_id": "evercrest-adv-draft-phish-002",
+        "original_source_dataset": null,
+        "original_phishing_technique": "Audit-request impersonation and workflow diversion"
+      },
+      "pair_review": "evercrest-audit",
+      "prior_audit_finding": "Advanced candidate: remove the exact additional-fields rule from per-email context, retain recorded scope/destination facts. Joint pair review required.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-phish-003",
+      "difficulty_label": "advanced",
+      "classification": 1,
+      "matched_pair_id": "evercrest-enrollment",
+      "base_sha256": "9d15de380036fd17b2d49ff0c5640ea4d428bb228dcde79e3e234dce11e83753",
+      "intended_mechanism": "IT impersonation and unsolicited MFA approval pretext",
+      "intended_clues": [
+        "Authentication action belongs to a support session rather than a learner-initiated enrollment."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "9d15de380036fd17b2d49ff0c5640ea4d428bb228dcde79e3e234dce11e83753",
+        "original_source_id": "evercrest-adv-draft-phish-003",
+        "original_source_dataset": null,
+        "original_phishing_technique": "IT impersonation and unsolicited MFA approval pretext"
+      },
+      "pair_review": "evercrest-enrollment",
+      "prior_audit_finding": "Advanced/intermediate boundary: a bold you-have-not-started clue could make it trivial. Use neutral event history; never conceal the actual session origin. Joint pair review.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-legit-001",
+      "difficulty_label": "advanced",
+      "classification": 0,
+      "matched_pair_id": "evercrest-consent",
+      "base_sha256": "1a92f1a0c261dacc3a62b737fe907ee1da53e2f4fe10c680b75d589546545ef1",
+      "intended_mechanism": "Legitimate external guest collaboration",
+      "intended_clues": [
+        "Folder-limited permissions, work identity and task align with the independent project record."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "1a92f1a0c261dacc3a62b737fe907ee1da53e2f4fe10c680b75d589546545ef1",
+        "original_source_id": "evercrest-adv-draft-legit-001",
+        "original_source_dataset": null,
+        "original_phishing_technique": null
+      },
+      "pair_review": "evercrest-consent",
+      "prior_audit_finding": "Advanced candidate: use the same inspection affordance as its phishing counterpart, with ordinary deadlines and no unnecessary reassurance.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-legit-002",
+      "difficulty_label": "advanced",
+      "classification": 0,
+      "matched_pair_id": "evercrest-audit",
+      "base_sha256": "ebf0a28a8f3c4ce46c5570655d350fa5b7d312fdd6633d6b1c9a1d9bb6585715",
+      "intended_mechanism": "Legitimate authorized external data transfer",
+      "intended_clues": [
+        "Requested fields, destination and reference match the recorded release."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "ebf0a28a8f3c4ce46c5570655d350fa5b7d312fdd6633d6b1c9a1d9bb6585715",
+        "original_source_id": "evercrest-adv-draft-legit-002",
+        "original_source_dataset": null,
+        "original_phishing_technique": null
+      },
+      "pair_review": "evercrest-audit",
+      "prior_audit_finding": "Advanced/intermediate boundary if the context spells out every comparison as a rule. Keep factual records and the same verification workload as its counterpart.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-legit-003",
+      "difficulty_label": "advanced",
+      "classification": 0,
+      "matched_pair_id": "evercrest-enrollment",
+      "base_sha256": "a905c0391d6b23a16921f4441f9e1a3291c4cb962b7d6a6dd89a38628cb96d26",
+      "intended_mechanism": "Legitimate user-initiated enrollment",
+      "intended_clues": [
+        "A confirmation corresponds to the session the learner initiates through the recorded portal."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "a905c0391d6b23a16921f4441f9e1a3291c4cb962b7d6a6dd89a38628cb96d26",
+        "original_source_id": "evercrest-adv-draft-legit-003",
+        "original_source_dataset": null,
+        "original_phishing_technique": null
+      },
+      "pair_review": "evercrest-enrollment",
+      "prior_audit_finding": "Joint MFA pair recalibration: preserve action/timing evidence and comparable presentation; do not reduce difficulty by declaring the expected answer in context.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-independent-phish-001",
+      "difficulty_label": "advanced",
+      "classification": 1,
+      "matched_pair_id": null,
+      "base_sha256": "a8da77f4bd8b5e869f303fe4233d4ca95025553edeef501dd0d901e51daafec8",
+      "intended_mechanism": "ClickFix-style diagnostic pretext",
+      "intended_clues": [
+        "Inspectable action retrieves and runs remote code instead of the recorded diagnostic collection task."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "a8da77f4bd8b5e869f303fe4233d4ca95025553edeef501dd0d901e51daafec8",
+        "original_source_id": "evercrest-adv-draft-independent-phish-001",
+        "original_source_dataset": null,
+        "original_phishing_technique": "ClickFix-style diagnostic pretext"
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Advanced candidate: context should describe the incident/log-collection task, not state the Software Center rule the email immediately violates. Never supply an actual command.",
+      "empirical_difficulty_validated": false
+    },
+    {
+      "source_id": "evercrest-adv-draft-independent-legit-001",
+      "difficulty_label": "advanced",
+      "classification": 0,
+      "matched_pair_id": null,
+      "base_sha256": "73c9a07388ea4ae9275bd2a7f33cbc40ef5bfb1aabc54d4ad4325d0e4bfc62a1",
+      "intended_mechanism": "Legitimate encrypted recruitment delivery",
+      "intended_clues": [
+        "Agency contact, expected delivery, contents and password channel reconcile with independent records."
+      ],
+      "benign_counter_cues": [
+        "Professional wording, deadlines, external suppliers, links and attachments occur in both classes."
+      ],
+      "context_basis": "Independent workplace record; does not state a security prohibition or expected answer.",
+      "calibration_note": "Advanced candidate: integrate the factual task record with inspected scope/action/identity evidence. Permission previews are passive and equivalent across the consent pair. Pair-level review and empirical calibration remain required.",
+      "rating_status": "Current label retained provisionally; no empirical recalibration or label reassignment.",
+      "approval_required": [
+        "Revised wording and evidence",
+        "Difficulty equivalence",
+        "Immutable content version before participant use"
+      ],
+      "source_provenance": {
+        "base_sha256": "73c9a07388ea4ae9275bd2a7f33cbc40ef5bfb1aabc54d4ad4325d0e4bfc62a1",
+        "original_source_id": "evercrest-adv-draft-independent-legit-001",
+        "original_source_dataset": null,
+        "original_phishing_technique": null
+      },
+      "pair_review": null,
+      "prior_audit_finding": "Advanced/intermediate boundary: current context over-specifies the exact answer and the sender says no viewer to install. Remove unnecessary reassurance, retain accessible factual evidence. Do not drop this independent hard item without replacement capacity.",
+      "empirical_difficulty_validated": false
+    }
+  ]
+}

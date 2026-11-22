@@ -383,7 +383,7 @@
 
                         <a
                             class="email-row"
-                            href="{{ url_for('training', scenario_id=email['scenario_id']) }}"
+                            href="{{ training_item_url(email['scenario_id']) }}"
                         >
 
                             <div class="email-icon">
@@ -416,6 +416,12 @@
 
                 <div class="empty-message">
                     {{ training_error if training_error else "No training emails are currently available." }}
+                    {% if legacy_plan_missing %}
+                    <form method="POST" action="{{ url_for('start_training') }}">
+                        <input type="hidden" name="form_token" value="{{ start_training_token }}">
+                        <button type="submit">Start a new session</button>
+                    </form>
+                    {% endif %}
                 </div>
 
             {% endif %}

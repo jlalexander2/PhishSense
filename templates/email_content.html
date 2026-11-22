@@ -1,0 +1,9 @@
+{% macro content(view) -%}
+{%- for part in view.parts -%}
+{%- if part.kind == 'link' -%}
+<details class="email-link-inspection"><summary class="email-link" title="{{ part.destination }}">{{ part.label }}</summary><span class="email-link-destination">Destination: {{ part.destination }}</span>{% if part.inspection is defined %}<div class="email-permissions"><strong>Application:</strong> {{ part.inspection.application_name }}<p>Requested access</p><ul>{% for permission in part.inspection.permissions %}<li>{{ permission }}</li>{% endfor %}</ul></div>{% endif %}</details>
+{%- elif part.kind == 'attachment' -%}
+<span class="email-attachment"><strong>{{ part.filename }}</strong>{% if part.preview %}<span class="attachment-preview">{{ part.preview }}</span>{% endif %}</span>
+{%- else -%}{{ part.text }}{%- endif -%}
+{%- endfor -%}
+{%- endmacro %}

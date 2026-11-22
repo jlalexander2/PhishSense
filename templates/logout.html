@@ -1,0 +1,9 @@
+{% extends "analytics_base.html" %}
+{% block title %}Log Out{% endblock %}
+{% block content %}
+<h1>Log Out</h1><p>End your PhishSense browser session?</p>
+<form method="POST" action="{{ url_for('logout') }}">
+<input type="hidden" name="auth_form_token" value="{{ auth_form_token }}">
+<button type="submit">Log Out</button>
+</form>
+{% endblock %}

@@ -1,3 +1,4 @@
+from item_helpers import stored_plan, open_item, submit_item, reference
 import secrets
 import importlib
 import time
@@ -6,7 +7,7 @@ import pytest
 
 from adaptive import (CONTROL_SCHEDULE, LEGACY_VERSION, VERSION,
                       next_scenario, sequence_enforced)
-from test_database import postgres
+from test_database import postgres, account_form
 from test_adaptive import seed
 
 
@@ -31,10 +32,10 @@ def application(postgres, monkeypatch):
 def register_client(app, postgres, name, group):
     client=app.test_client()
     account=dict(username=name,email=f'{name}@example.invalid',password=secrets.token_urlsafe(24))
-    client.post('/register',data=account)
+    account_form(client,'/register',account)
     with postgres() as conn:
         conn.execute('UPDATE users SET study_group=%s WHERE username=%s',(group,name))
-    client.post('/login',data=account)
+    account_form(client,'/login',account)
     return client
 
 
@@ -42,7 +43,7 @@ def register_client(app, postgres, name, group):
 def test_control_unavailable_is_blocked(postgres,monkeypatch,hard_count):
     app=application(postgres,monkeypatch)
     with postgres() as conn:
-        seed(conn)
+        seed(conn,hard=False)
         for i in range(hard_count):
             conn.execute("INSERT INTO training_scenarios(sender_name,sender_email,subject,email_body,is_phishing,difficulty_level,explanation) VALUES ('Test','test@example.invalid','Test','Body',1,'advanced','Explanation')")
     client=register_client(app,postgres,'control','control')
@@ -59,13 +60,13 @@ def test_control_unavailable_is_blocked(postgres,monkeypatch,hard_count):
 
 
 def assert_cannot_skip(client,postgres,sid,ids):
-    assert client.get(f'/training?scenario_id={ids[1]}').status_code==302
+    assert open_item(client,ids[1]).status_code==302
     # Simulate an old tab/forged submission with an otherwise valid session token.
     with client.session_transaction() as state:
-        state['active_scenario_id']=ids[1]
+        state['active_item_ref']=reference(client,ids[1],state)
         state['active_form_token']='valid-test-token'
         state['scenario_started_at']=time.time()-5
-    rejected=client.post('/training',data=dict(scenario_id=ids[1],user_answer=1,
+    rejected=submit_item(client,dict(scenario_id=ids[1],user_answer=1,
                          confidence_level=4,reasoning='Attempt to skip',form_token='valid-test-token'))
     assert rejected.status_code==400
     assert b'next available email' in rejected.data
@@ -82,12 +83,12 @@ def test_sequence_enforcement_and_inbox(postgres,monkeypatch,group):
     client=register_client(app,postgres,'sequence',group)
     page=client.get('/inbox')
     with client.session_transaction() as state:
-        ids=state['training_scenario_ids']
+        ids=stored_plan(postgres,state)
         sid=state['training_session_id']
     assert b'Evercrest Group' in page.data
     assert page.data.count(b'class="email-row locked"')==9
-    assert f'href="/training?scenario_id={ids[0]}"'.encode() in page.data
-    assert f'href="/training?scenario_id={ids[1]}"'.encode() not in page.data
+    assert f'href="/training?item_ref={reference(client,ids[0])}"'.encode() in page.data
+    assert f'href="/training?item_ref={reference(client,ids[1])}"'.encode() not in page.data
     assert_cannot_skip(client,postgres,sid,ids)
 
 
@@ -100,17 +101,17 @@ def test_fixed_control_sequence_ignores_all_performance(postgres,monkeypatch):
         client=register_client(app,postgres,name,'control')
         assert client.get('/inbox').status_code==200
         with client.session_transaction() as state:
-            ids=state['training_scenario_ids']
+            ids=stored_plan(postgres,state)
             sid=state['training_session_id']
         sequences.append(ids)
         for index,scenario_id in enumerate(ids):
-            assert client.get(f'/training?scenario_id={scenario_id}').status_code==200
+            assert open_item(client,scenario_id).status_code==200
             with client.session_transaction() as state:
                 token=state['active_form_token']
                 state['scenario_started_at']=time.time()-seconds
             with postgres() as conn:
                 answer=conn.execute('SELECT is_phishing FROM training_scenarios WHERE scenario_id=%s',(scenario_id,)).fetchone()['is_phishing']
-            result=client.post('/training',data=dict(scenario_id=scenario_id,user_answer=answer if correct else 1-answer,
+            result=submit_item(client,dict(scenario_id=scenario_id,user_answer=answer if correct else 1-answer,
                                confidence_level=confidence,reasoning='Synthetic research reasoning',form_token=token))
             assert result.status_code==200
             page=client.get('/inbox')

@@ -1,3 +1,4 @@
+from item_helpers import stored_plan, open_item, submit_item, reference
 import secrets
 import importlib
 import time
@@ -5,8 +6,8 @@ import time
 import pytest
 from psycopg.types.json import Jsonb
 
-from adaptive import VERSION, evaluate_difficulty, select_scenarios
-from test_database import postgres
+from adaptive import VERSION, PAIR_VERSION, evaluate_difficulty, select_scenarios
+from test_database import postgres, account_form
 
 
 def block(correct, seconds=60, confidence=4):
@@ -38,7 +39,7 @@ def test_bounds_and_complete_window():
     assert evaluate_difficulty('intermediate', block(5)[:4], 'experimental')[0] == 'intermediate'
 
 
-def seed(conn, hard=False):
+def seed(conn, hard=True):
     for level, count in [('beginner',7),('intermediate',12),('advanced',7 if hard else 0)]:
         for i in range(count):
             conn.execute('''INSERT INTO training_scenarios
@@ -56,29 +57,29 @@ def test_adaptive_workflow(postgres, monkeypatch, group):
         seed(conn)
     client=application.app.test_client()
     account=dict(username='test',email='test@example.invalid',password=secrets.token_urlsafe(24))
-    client.post('/register',data=account)
+    account_form(client,'/register',account)
     with postgres() as conn:
         conn.execute('UPDATE users SET study_group=%s',(group,))
-    client.post('/login',data=account)
+    account_form(client,'/login',account)
     client.get('/inbox')
     with client.session_transaction() as state:
         sid=state['training_session_id']
-        initial=state['training_scenario_ids']
+        initial=stored_plan(postgres,state)
     with postgres() as conn:
         assert {r['difficulty_level'] for r in conn.execute('SELECT difficulty_level FROM training_scenarios WHERE scenario_id=ANY(%s)',(initial,))} == {'intermediate'}
     reviewed=[]
     for i in range(10):
         client.get('/inbox')
         with client.session_transaction() as state:
-            ids=state['training_scenario_ids']
+            ids=stored_plan(postgres,state)
         scenario_id=next(s for s in ids if s not in reviewed)
-        assert client.get(f'/training?scenario_id={scenario_id}').status_code == 200
+        assert open_item(client,scenario_id).status_code == 200
         with client.session_transaction() as state:
             token=state['active_form_token']
             state['scenario_started_at']=time.time()-10
         with postgres() as conn:
             correct=conn.execute('SELECT is_phishing FROM training_scenarios WHERE scenario_id=%s',(scenario_id,)).fetchone()['is_phishing']
-        response=client.post('/training',data=dict(scenario_id=scenario_id,user_answer=1-correct if i<5 else correct,
+        response=submit_item(client,dict(scenario_id=scenario_id,user_answer=1-correct if i<5 else correct,
                             confidence_level=4,reasoning='Synthetic reasoning',form_token=token))
         assert response.status_code==200
         reviewed.append(scenario_id)
@@ -96,18 +97,19 @@ def test_adaptive_workflow(postgres, monkeypatch, group):
             assert set(reviewed).issubset(current['scenario_ids'])
             if group == 'experimental':
                 stale = initial[5]
-                assert client.get(f'/training?scenario_id={stale}').status_code == 302
+                assert open_item(client,stale).status_code == 302
                 with client.session_transaction() as state:
                     state['training_scenario_ids'] = initial
-                    state['active_scenario_id'] = stale
+                    state['active_item_ref'] = reference(client,stale,state)
                     state['scenario_started_at'] = time.time()-10
                     state['active_form_token'] = 'stale-token'
-                assert client.post('/training', data=dict(scenario_id=stale, user_answer=1,
+                assert submit_item(client,dict(scenario_id=stale, user_answer=1,
                     confidence_level=4, reasoning='Stale submission', form_token='stale-token')).status_code == 400
                 # Inbox membership is recovered from PostgreSQL, not stale cookies.
                 client.get('/inbox')
                 with client.session_transaction() as state:
-                    assert state['training_scenario_ids'] == current['scenario_ids']
+                    assert 'training_scenario_ids' not in state
+                    assert stored_plan(postgres,state) == current['scenario_ids']
     assert b'Training Complete!' in client.get('/inbox').data
     with postgres() as conn:
         rows=conn.execute('SELECT * FROM training_responses WHERE session_id=%s ORDER BY response_id',(sid,)).fetchall()
@@ -128,7 +130,7 @@ def test_promotion_availability_and_selection(postgres, hard):
         ids=select_scenarios(conn,user,'intermediate',10)
         session=conn.execute('''INSERT INTO training_sessions
             (user_id,session_type,study_group,algorithm_version,scenario_ids)
-            VALUES (%s,'training','experimental',%s,%s) RETURNING *''',(user,VERSION,Jsonb(ids))).fetchone()
+            VALUES (%s,'training','experimental',%s,%s) RETURNING *''',(user,PAIR_VERSION,Jsonb(ids))).fetchone()
         for scenario_id in ids[:5]:
             conn.execute('''INSERT INTO training_responses
                 (session_id,scenario_id,user_answer,is_correct,confidence_level,response_time,difficulty_at_response)

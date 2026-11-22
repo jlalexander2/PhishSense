@@ -8,7 +8,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from psycopg import sql
-from adaptive import VERSION, CONTROL_SCHEDULE, control_scenarios, pair_safe, select_scenarios
+from adaptive import PAIR_VERSION, CONTROL_SCHEDULE, control_scenarios, pair_safe, select_scenarios
 from database import get_db_connection
 from import_scenarios import import_scenarios, validate_scenarios
 
@@ -36,7 +36,7 @@ def verified_package():
     expected_pairs = ('evercrest-consent','evercrest-audit','evercrest-enrollment')
     for i, row in enumerate(approved):
         expected = expected_pairs[i % 3] if i < 6 else None
-        if row['matched_pair_id'] != expected or row['introduced_in_version'] != VERSION:
+        if row['matched_pair_id'] != expected or row['introduced_in_version'] != PAIR_VERSION:
             raise ValueError('Invalid pair/version mapping')
     lines = (ROOT/'data/scenarios_approved_for_prototype.jsonl').read_bytes().splitlines(keepends=True)
     if hashlib.sha256(b''.join(lines[:-8])).hexdigest() != manifest['original_approved_jsonl_sha256']:

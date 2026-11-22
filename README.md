@@ -1,8 +1,8 @@
 # PhishSense
 
-**Version:** v0.5.0 (Milestone 5)
+**Version:** v0.6.0 (Milestone 6 — local build)
 
-**Status:** Milestone 5 complete; development prototype
+**Status:** Implementation substantially complete — final database regression testing and manual browser verification pending.
 
 **Project Type:** Master's Capstone — Cybersecurity Awareness Training
 
@@ -18,9 +18,9 @@ The long-term objective is to evaluate whether adaptive phishing-awareness train
 
 ## Current Development Version
 
-**PhishSense v0.5.0 (Milestone 5)**
+**PhishSense v0.6.0 (Milestone 6 — local build)**
 
-This version adds learner session results, performance analytics, reliable session completion, and training history while preserving Milestone 4 adaptive/control training.
+This local build adds dashboard progress summaries, authentication/input and content-safety protections, realistic inert email presentation, opaque scenario references, and balanced new-session selection. Existing results/history, scoring and older training protocols are preserved. Final database regression testing and manual browser verification remain pending.
 
 Implemented features include:
 
@@ -249,6 +249,29 @@ session completion, learner results and training history. The full Supabase suit
 passes 69 tests with zero failures and zero skips. See [MILESTONE5.md](MILESTONE5.md).
 Researcher dashboards, exports and research administration remain future work.
 
+## Milestone 6 development — Security and Functional Verification
+
+**Status: Implementation substantially complete — final database regression testing and manual browser verification pending.**
+
+Feature development is stopped. See [MILESTONE6_HANDOFF.md](MILESTONE6_HANDOFF.md)
+for the final checklist, exact test status and safe verification resume point.
+
+Local development adds learner dashboard progress summaries, bounded form inputs,
+account-form CSRF protection, logout confirmation, and browser content-safety
+headers. T25–T30 verification preserves the approved adaptive/control protocol and
+uses the separate disposable test project. The locally approved balanced-selection
+protocol applies only to new sessions: 2 phishing / 3 legitimate intermediate
+baseline items, then 3 phishing / 2 legitimate, preserving control difficulties
+and the experimental evaluator. Older sessions retain their protocol and plans.
+See [BALANCED_SELECTION.md](BALANCED_SELECTION.md) and
+[MILESTONE6_STATUS.md](MILESTONE6_STATUS.md) for current validation and limitations.
+The published release remains v0.5.0 pending a separately approved release.
+The [email realism refinement](SCENARIO_REALISM.md) adds inert link inspection and
+attachment presentation; 27 proposed corpus revisions remain separate drafts
+pending review, with no production import. Revision 2 can be inspected in the
+isolated disposable-project browser review at `http://127.0.0.1:5006/review` while
+its local launcher is running; this reviewer route is not part of the normal app.
+
 ## Research Overview
 
 PhishSense is being developed as both a software application and a research project.
@@ -408,6 +431,9 @@ against Supabase. See `MIGRATION_REPORT.md` for validation details.
 7. Start with `python app.py`. Visit http://127.0.0.1:5000. Keep the Flask secret
    stable to preserve signed sessions; a changed secret requires logging in again.
    Debug mode is off by default. This remains a development application.
+   When hosted over HTTPS, set `PHISHSENSE_HTTPS=true` to enable Secure session
+   cookies. Leave it false for local HTTP. Account forms require their rendered
+   form token; Log Out now asks for confirmation before clearing the session.
 
 ### TLS trust and read-only connection check
 
@@ -485,7 +511,7 @@ synchronized back to SQLite.
 
 Initial SQLite response recording has also been verified.
 
-The complete Supabase suite contains 69 tests. See [TESTING.md](TESTING.md) for coverage, isolation, and validation instructions.
+The current development Supabase suite contains 137 tests; the released Milestone 5 suite contained 69. See [TESTING.md](TESTING.md) for coverage, isolation, and validation instructions.
 
 ## Planned Development
 
@@ -526,13 +552,17 @@ The current prototype demonstrates the core training experience and establishes 
 | v0.3.0 | Milestone 3 | Simulated inbox, classification, feedback, and response tracking |
 | v0.4.0 | Milestone 4 | Supabase migration, adaptive/control workflows, matched pairs, and recurring-mistake tracking |
 | v0.5.0 | Milestone 5 | Performance analytics, atomic session completion, learner results, and training history |
+| v0.6.0 (local) | Milestone 6 | Security and workflow verification, realistic email presentation and balanced selection; final validation pending |
 
 ## Project Status
 
-**Current Version: v0.5.0 (Milestone 5)**
+**Current Local Version: v0.6.0 (Milestone 6)**
 
-Release metadata is recorded in [VERSION](VERSION); the corresponding annotated
-Git tag is `v0.5.0`. See [release notes](releases/v0.5.0.md).
+Local build metadata is recorded in [VERSION](VERSION). See the
+[v0.6.0 build notes](releases/v0.6.0.md) and
+[Milestone 6 handoff](MILESTONE6_HANDOFF.md) for pending verification.
+No v0.6.0 tag or published release has been created. The latest published version
+remains [v0.5.0](releases/v0.5.0.md).
 
 PhishSense is under active development as part of a master's capstone project.
 
@@ -550,3 +580,23 @@ Local recording helpers, walkthroughs containing synthetic login details, raw
 unreviewed datasets, credentials, database files and generated artifacts are
 intentionally excluded from version control. Never rerun migrations/imports on an
 existing installation merely to demonstrate the application.
+
+## Local scenario review
+
+All 27 refined emails remain local review candidates in
+`data/scenario_realism_drafts.json`, with source snapshots and reviewer-only audits
+preserved. No production corpus replacement has occurred. Existing review-server
+snapshots on ports 5006–5008 can be stale; use the
+[attachment/corpus verification report](MILESTONE6_ATTACHMENT_CORPUS_VERIFICATION.md)
+for routing and safe review options. Reviewer pages deliberately include answers
+and must not be used as participant training pages.
+
+The former v3 control plan's 9/1 imbalance is documented historically. Approved
+`rules-v4-balanced-selection` now applies 5P/5L balance to new sessions only,
+preserving older plans, thresholds, control difficulties and pair exclusions.
+See [BALANCED_SELECTION.md](BALANCED_SELECTION.md). Expandable attachment
+inspection is planned for Milestone 7; Milestone 6 keeps static, inert tiles.
+
+Current evidence is **126 distinct passing cases out of 159**, one connection-
+blocked case and 32 database cases not rerun, with zero reported assertion failures
+and zero skips. This local version label does not establish full validation.

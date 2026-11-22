@@ -37,6 +37,13 @@
         }
 
         a { color: #174ea6; }
+        .summary { margin-top: 24px; border-top: 1px solid #dce3ed; padding-top: 16px; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 12px; }
+        .metric { background: #f4f7fb; padding: 16px; border-radius: 8px; }
+        .metric dt { color: #52637b; font-size: 14px; }
+        .metric dd { margin: 8px 0 0; font-size: 24px; font-weight: bold; color: #243b53; }
+        a:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+        @media(max-width:600px) { body { padding: 16px; } .dashboard { padding: 20px; } }
     </style>
 </head>
 <body>
@@ -45,6 +52,23 @@
         <p>Your PhishSense Learner Dashboard</p>
         <p>Build your phishing awareness skills through
            personalized training.</p>
+
+        <section class="summary" aria-labelledby="progress-heading">
+            <h2 id="progress-heading">Your Training Progress</h2>
+            <dl class="metrics">
+                <div class="metric"><dt>Completed sessions</dt><dd>{{ history.completed_count }}</dd></div>
+                <div class="metric"><dt>Recorded responses in completed sessions</dt><dd>{{ history.overall.response_count }}</dd></div>
+                <div class="metric"><dt>Overall accuracy</dt><dd>{{ '%.1f%%'|format(history.overall.accuracy_percent) if history.overall.accuracy_percent is not none else '—' }}</dd></div>
+                <div class="metric"><dt>Average response time</dt><dd>{{ '%.1f s'|format(history.overall.average_response_time) if history.overall.average_response_time is not none else '—' }}</dd></div>
+                <div class="metric"><dt>Average confidence</dt><dd>{{ '%.2f / 5'|format(history.overall.average_confidence) if history.overall.average_confidence is not none else '—' }}</dd></div>
+            </dl>
+            {% if latest %}
+            <p><a href="{{ url_for('results', session_id=latest.session_id) }}">Review your latest completed session</a></p>
+            {% if history.accuracy_change_points is not none %}<p>Latest versus previous completed session: {{ '%+.1f'|format(history.accuracy_change_points) }} percentage points in accuracy.</p>{% endif %}
+            {% else %}<p>No completed sessions yet. Finish a ten-email session to see your performance summary.</p>{% endif %}
+            {% if history.in_progress %}<p>{{ history.in_progress|length }} in-progress session(s); excluded from completed-session statistics.</p>{% endif %}
+            <p>Metrics combine recorded responses from completed training sessions. Difficulty and content may vary. <a href="{{ url_for('history') }}">Review training history</a>.</p>
+        </section>
 
         <div class="options">
             <div class="option">
